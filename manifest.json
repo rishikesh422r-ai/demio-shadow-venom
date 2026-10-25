@@ -1,0 +1,10 @@
+{
+  "name": "DEMIO AI — Shadow Venom",
+  "short_name": "DEMIO AI",
+  "description": "Your futuristic personal AI companion.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07070d",
+  "theme_color": "#080810",
+  "icons": []
+}

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080810">
+  <meta name="description" content="DEMIO AI — Shadow Venom, your futuristic personal AI companion.">
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="stylesheet" href="/static/style.css">
+  <title>DEMIO AI — SHADOW VENOM</title>
+</head>
+<body>
+  <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div>
+  <header class="topbar">
+    <a class="brand" href="/"><span class="brand-mark">D</span><span><b>DEMIO AI</b><small>SHADOW VENOM</small></span></a>
+    <div class="status"><i></i><span id="statusText">SYSTEM ONLINE</span></div>
+    <button id="installBtn" class="install hidden" type="button">Install app</button>
+  </header>
+
+  <main class="layout">
+    <section class="character-panel">
+      <div class="eyebrow"><span class="pulse-dot"></span> YOUR PERSONAL AI</div>
+      <h1>Meet your <span>shadow.</span></h1>
+      <p class="intro">Think faster. Learn more. Build your future.</p>
+      <div class="avatar-stage" id="avatarStage" data-state="idle" aria-label="Animated Shadow Venom avatar">
+        <div class="orbit orbit-a"></div><div class="orbit orbit-b"></div>
+        <div class="floor-glow"></div>
+        <div class="avatar">
+          <div class="horn horn-left"></div><div class="horn horn-right"></div>
+          <div class="head">
+            <div class="brow brow-left"></div><div class="brow brow-right"></div>
+            <div class="eye eye-left"></div><div class="eye eye-right"></div>
+            <div class="nose"></div>
+            <div class="jaw"><div class="mouth"><div class="teeth"></div><div class="tongue"></div></div></div>
+          </div>
+          <div class="neck"></div>
+          <div class="torso"><div class="core"></div><div class="chest-line"></div></div>
+          <div class="arm arm-left"><div class="forearm"></div><div class="hand"><i></i><i></i><i></i></div></div>
+          <div class="arm arm-right"><div class="forearm"></div><div class="hand"><i></i><i></i><i></i></div></div>
+          <div class="hip"></div>
+          <div class="leg leg-left"><div class="shin"></div><div class="foot"></div></div>
+          <div class="leg leg-right"><div class="shin"></div><div class="foot"></div></div>
+        </div>
+        <div class="sound-ring ring-one"></div><div class="sound-ring ring-two"></div>
+      </div>
+      <div class="character-state"><span class="state-bars"><i></i><i></i><i></i><i></i><i></i></span><span id="characterState">Awaiting your voice</span></div>
+      <div class="capabilities">
+        <span>⌘ Coding mentor</span><span>✦ Study coach</span><span>◉ Personal companion</span>
+      </div>
+    </section>
+
+    <section class="chat-panel">
+      <div class="chat-heading"><div><div class="eyebrow">PRIVATE SESSION</div><h2>Talk to DEMIO</h2></div><button id="clearBtn" class="icon-button" title="Clear conversation" aria-label="Clear conversation">↻</button></div>
+      <div id="messages" class="messages" aria-live="polite">
+        <div class="message bot-message"><div class="mini-avatar">D</div><div class="bubble"><span class="speaker">DEMIO <small>• ONLINE</small></span><p>Hey bro. I'm here. Talk to me, or type what is on your mind. Let's build something great.</p></div></div>
+      </div>
+      <div class="quick-prompts"><button data-prompt="Help me improve my English communication.">Improve my English</button><button data-prompt="Teach me JavaScript one step at a time.">Learn JavaScript</button><button data-prompt="Help me plan my next project.">Plan a project</button></div>
+      <form id="chatForm" class="composer">
+        <textarea id="messageInput" rows="1" placeholder="Message your Shadow..." aria-label="Message your Shadow"></textarea>
+        <button id="micBtn" class="mic-button" type="button" title="Start voice input" aria-label="Start voice input">🎙</button>
+        <button id="sendBtn" class="send-button" type="submit" aria-label="Send message">➤</button>
+      </form>
+      <div class="footer-note"><span class="lock">◇</span> Your API key stays on the server · Voice needs microphone permission</div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
