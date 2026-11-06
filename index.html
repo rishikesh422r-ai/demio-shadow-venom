@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#070b13">
+<title>DEMIO — Personal AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#070b13;--panel:#0e1624;--panel2:#111e30;--line:#20354b;--cyan:#63e5ff;--blue:#268cff;--text:#edf7ff;--muted:#8ca4bb;--red:#ff6d79;--green:#6cf0b0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#12314b 0,transparent 45%),var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer}
+.app{min-height:100vh;display:grid;grid-template-columns:250px minmax(0,1fr)}
+.sidebar{background:#080f1aee;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:22px}
+.brand{font:800 23px Orbitron,sans-serif;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 22px #37bde866}.brand small{display:block;font:500 9px Inter;letter-spacing:3px;color:var(--muted);margin-top:7px}
+.system{border:1px solid var(--line);background:#0c1725;border-radius:14px;padding:12px}.sysrow{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--muted)}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}.sysmeta{font-size:11px;color:#6f8ba4;margin-top:8px;line-height:1.5}
+.navtitle{font-size:10px;color:#66829a;letter-spacing:2px;margin:4px 8px}.nav{display:grid;gap:7px}.nav button{border:1px solid transparent;background:transparent;color:#a9bfd1;text-align:left;padding:12px;border-radius:11px;display:flex;gap:12px;align-items:center}.nav button:hover,.nav button.active{background:#11263a;border-color:#24445e;color:var(--cyan)}.nav .ico{width:22px;text-align:center;font-size:17px}.sidefoot{margin-top:auto;color:#668097;font-size:11px;line-height:1.6}
+.main{min-width:0;display:flex;flex-direction:column;min-height:100vh}.topbar{height:66px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 25px;background:#08111ddd;backdrop-filter:blur(12px)}.topname{font:600 12px Orbitron;letter-spacing:2px;color:#bcefff}.topright{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:12px}.topbtn{border:1px solid var(--line);background:#101c2a;color:#c8dced;padding:9px 12px;border-radius:9px}
+.content{width:min(1050px,100%);margin:0 auto;padding:26px 26px 40px;flex:1}.hero{text-align:center;padding:22px 10px 24px}.orb{width:88px;height:88px;margin:0 auto 18px;border-radius:50%;border:1px solid #55dfff99;background:radial-gradient(circle at 35% 30%,#b8f7ff,#1684b9 28%,#10253d 66%,#080e19);box-shadow:0 0 24px #35caff55, inset 0 0 20px #a7f5ff55;position:relative}.orb:after{content:"";position:absolute;inset:-9px;border:1px solid #45d7ff44;border-radius:50%;animation:spin 9s linear infinite;border-left-color:transparent;border-right-color:transparent}@keyframes spin{to{transform:rotate(360deg)}}.hero h1{font:700 clamp(21px,4vw,32px) Orbitron;margin:0 0 9px;letter-spacing:2px}.hero p{color:var(--muted);font-size:13px;margin:0}
+.panel{display:none}.panel.active{display:block}.chatbox{border:1px solid var(--line);background:#0b1421;border-radius:17px;min-height:330px;max-height:54vh;overflow:auto;padding:16px}.empty{text-align:center;color:#7793aa;padding:65px 15px;font-size:13px;line-height:1.8}.msg{max-width:88%;padding:13px 15px;border-radius:14px;margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.65;font-size:14px}.msg.user{margin-left:auto;background:#123754;border:1px solid #245a7d}.msg.ai{background:#111f30;border:1px solid #243e55}.msg .who{font-size:10px;letter-spacing:1.5px;color:var(--cyan);display:block;margin-bottom:6px;font-weight:700}.msg img{max-width:100%;max-height:230px;border-radius:9px;display:block;margin-top:8px}.composer{margin-top:12px;border:1px solid #29445e;background:#0e1928;border-radius:15px;padding:10px}.compose-row{display:flex;gap:9px;align-items:flex-end}.compose-row textarea{flex:1;min-height:45px;max-height:140px;resize:vertical;background:transparent;color:var(--text);border:0;outline:0;padding:12px;font-size:14px}.btn{border:1px solid #2b4a65;background:#13283b;color:#cceeff;padding:11px 14px;border-radius:10px}.btn.primary{background:linear-gradient(120deg,#087cb4,#1769ca);border-color:#299dd0;color:white;font-weight:700}.btn:disabled{opacity:.5;cursor:not-allowed}.compose-tools{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap}.hint{font-size:11px;color:#7892a8;margin-left:auto}
+.cardgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.card{background:linear-gradient(145deg,#101e2e,#0c1522);border:1px solid var(--line);border-radius:15px;padding:18px}.card h3{margin:0 0 8px;font:600 14px Orbitron;letter-spacing:1px;color:#bcefff}.card p{font-size:13px;color:var(--muted);line-height:1.6}.field{display:grid;gap:7px;margin:12px 0}.field label{font-size:12px;color:#a7c1d5}.field input,.field textarea,.field select{width:100%;background:#091321;color:var(--text);border:1px solid #29445e;border-radius:9px;padding:11px;outline:none}.field textarea{min-height:95px;resize:vertical}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.varlist{display:grid;gap:8px;margin-top:14px}.varitem{display:flex;justify-content:space-between;gap:12px;padding:10px;border:1px solid var(--line);border-radius:9px;background:#0b1725;font-size:12px}.varitem span{overflow-wrap:anywhere}.voicecard{text-align:center;padding:30px 15px}.voiceorb{width:125px;height:125px;border-radius:50%;margin:15px auto 20px;background:radial-gradient(circle,#8ff2ff,#116b9d 50%,#0a1728 75%);box-shadow:0 0 35px #36cfff55;display:grid;place-items:center;font-size:35px}.voiceorb.listening{animation:pulse 1.1s infinite}@keyframes pulse{50%{box-shadow:0 0 65px #36cfffaa;transform:scale(1.04)}}.voice-transcript{color:#a8c3d8;min-height:35px;font-size:13px}.quiz-options{display:grid;gap:8px;margin:15px 0}.quiz-options button{text-align:left}.notice{border-left:3px solid var(--cyan);padding:10px 13px;background:#0d1b2b;color:#9bb7cc;font-size:12px;line-height:1.6;border-radius:0 8px 8px 0}
+.footer{text-align:center;color:#536e85;font-size:10px;padding:15px;border-top:1px solid #14263a}
+@media(max-width:760px){.app{grid-template-columns:1fr}.sidebar{padding:12px 14px;border-right:0;border-bottom:1px solid var(--line);gap:12px}.brand{font-size:19px}.system,.navtitle,.sidefoot{display:none}.nav{display:flex;overflow-x:auto;padding-bottom:3px}.nav button{white-space:nowrap;padding:9px 11px;font-size:12px}.main{min-height:calc(100vh - 110px)}.topbar{height:52px;padding:0 15px}.content{padding:12px 12px 25px}.hero{padding:18px 8px}.orb{width:65px;height:65px}.chatbox{max-height:52vh;min-height:280px}.cardgrid{grid-template-columns:1fr}.msg{max-width:96%}.hint{width:100%;margin-left:0}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="brand">DEMIO<small>PERSONAL INTELLIGENCE</small></div>
+  <div class="system"><div class="sysrow"><span class="dot" id="statusDot"></span><span id="statusText">CHECKING SYSTEM</span></div><div class="sysmeta" id="sysMeta">Connecting to your DEMIO server…</div></div>
+  <div><div class="navtitle">WORKSPACE</div><nav class="nav">
+    <button class="active" data-panel="chat"><span class="ico">◈</span> Chat</button>
+    <button data-panel="voice"><span class="ico">◉</span> Speaking mode</button>
+    <button data-panel="variables"><span class="ico">⌘</span> Variables</button>
+    <button data-panel="mentor"><span class="ico">◎</span> Mentor</button>
+    <button data-panel="exercise"><span class="ico">▤</span> Exercises</button>
+    <button data-panel="games"><span class="ico">✦</span> Games</button>
+  </nav></div>
+  <div class="sidefoot">DEMIO runs through your own server.<br>AI responses require a configured API key.</div>
+</aside>
+<main class="main">
+  <header class="topbar"><div class="topname" id="sectionTitle">CHAT INTERFACE</div><div class="topright"><span id="modelLabel">AI CONNECTION</span><button class="topbtn" id="newChat">＋ New chat</button></div></header>
+  <div class="content">
+    <section class="hero"><div class="orb"></div><h1>HOW CAN I HELP YOU?</h1><p>Your workspace for thinking, learning, building and exploring.</p></section>
+
+    <section class="panel active" id="panel-chat">
+      <div class="chatbox" id="chatLog"><div class="empty">DEMIO is ready.<br>Ask a question, share an idea, or attach an image.</div></div>
+      <div class="composer">
+        <div class="compose-row"><textarea id="chatInput" placeholder="Message DEMIO… (Enter to send, Shift+Enter for new line)"></textarea><button class="btn primary" id="sendChat">SEND ➤</button></div>
+        <div class="compose-tools"><button class="btn" id="attachBtn">＋ Image</button><input type="file" id="imageInput" accept="image/*" hidden><span id="fileLabel" class="hint">Images up to 5 MB each</span><span class="hint">AI can make mistakes — verify important information.</span></div>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-voice">
+      <div class="card voicecard"><h3>DEMIO SPEAKING MODE</h3><p>Talk to DEMIO using your microphone and hear its answer aloud.</p><div class="voiceorb" id="voiceOrb">🎙</div><div class="voice-transcript" id="voiceTranscript">Press Start listening and allow microphone access.</div><div class="row" style="justify-content:center;margin-top:18px"><button class="btn primary" id="listenBtn">START LISTENING</button><button class="btn" id="stopVoice">STOP</button></div><div class="field" style="max-width:320px;margin:20px auto 0;text-align:left"><label><input type="checkbox" id="speakReplies" checked> Speak DEMIO's replies aloud</label></div></div>
+      <div class="notice" style="margin-top:14px">Voice recognition depends on browser support and usually works best in Chrome over HTTPS. Your microphone is used only after you press Start listening.</div>
+    </section>
+
+    <section class="panel" id="panel-variables">
+      <div class="card"><h3>VARIABLE WORKSPACE</h3><p>Save small values, goals, project names or settings. DEMIO can use these values as context when answering.</p>
+        <div class="row"><div class="field" style="flex:1;min-width:130px"><label>Variable name</label><input id="varName" placeholder="e.g. project"></div><div class="field" style="flex:2;min-width:160px"><label>Value</label><input id="varValue" placeholder="e.g. DEMIO AI"></div><button class="btn primary" id="addVar">ADD</button></div>
+        <div class="varlist" id="varList"></div>
+      </div>
+      <div class="notice" style="margin-top:14px">Variables are stored in this browser's local storage. Do not store passwords, API keys, or private information here.</div>
+    </section>
+
+    <section class="panel" id="panel-mentor">
+      <div class="card"><h3>PERSONAL MENTOR</h3><p>Choose a topic and DEMIO will teach you in small steps, ask questions and help you practise.</p>
+        <div class="field"><label>What do you want to learn?</label><input id="mentorTopic" placeholder="e.g. Python, Linux, C programming, mathematics"></div>
+        <div class="field"><label>Your current level</label><select id="mentorLevel"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></div>
+        <button class="btn primary" id="startMentor">START A MENTOR SESSION</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-exercise">
+      <div class="card"><h3>EXERCISE GENERATOR</h3><p>Generate practice tasks with hints and solutions when you ask for them.</p>
+        <div class="field"><label>Subject or skill</label><input id="exerciseTopic" placeholder="e.g. Python loops, eigenvalues, Linux commands"></div>
+        <div class="row"><div class="field" style="flex:1"><label>Difficulty</label><select id="exerciseLevel"><option>Easy</option><option selected>Medium</option><option>Hard</option></select></div><div class="field" style="flex:1"><label>Number of questions</label><select id="exerciseCount"><option>3</option><option selected>5</option><option>10</option></select></div></div>
+        <button class="btn primary" id="makeExercise">GENERATE EXERCISES</button>
+      </div>
+    </section>
+
+    <section class="panel" id="panel-games">
+      <div class="cardgrid">
+        <div class="card"><h3>QUICK TRIVIA</h3><p>Play a short general-knowledge quiz. Choose an answer and see your score.</p><button class="btn primary" id="startQuiz">START TRIVIA</button><div id="quizArea"></div></div>
+        <div class="card"><h3>AI TEXT ADVENTURE</h3><p>Play a story game where your choices decide what happens next.</p><div class="field"><label>Choose a world</label><select id="gameWorld"><option>Futuristic science-fiction mission</option><option>Mystery detective story</option><option>Fantasy kingdom adventure</option><option>Survival on a strange planet</option></select></div><button class="btn primary" id="startAdventure">START ADVENTURE</button></div>
+      </div>
+    </section>
+  </div>
+  <footer class="footer">DEMIO • PERSONAL AI WORKSPACE • Built for your own deployment</footer>
+</main>
+</div>
+<script src="/app.js" defer></script>
+</body>
+</html>
