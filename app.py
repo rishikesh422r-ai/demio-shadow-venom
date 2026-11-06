@@ -1,31 +1,108 @@
 import os
+import io
+import json
 import base64
-from io import BytesIO
 
 from flask import Flask, request, jsonify, send_from_directory
 from groq import Groq
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
 
-GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
+app.config["MAX_CONTENT_LENGTH"] = 15 * 1024 * 1024
+
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
+
+CHAT_MODEL = os.environ.get(
+    "GROQ_CHAT_MODEL",
+    "llama-3.3-70b-versatile"
+)
+
+VISION_MODEL = os.environ.get(
+    "GROQ_VISION_MODEL",
+    "qwen/qwen3.8-27b"
+)
 
 client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
-TEXT_MODEL = "openai/gpt-oss-120b"
-VISION_MODEL = "qwen/qwen3.8-27b"
-
 SYSTEM_PROMPT = """
-You are ULTRON 2099, also known as DEMIO.
-You are a friendly, intelligent personal AI supervisor.
-You can teach, mentor, explain, help with coding and answer questions.
-Understand Tamil and English.
-Reply in the language the user uses.
-Be clear, accurate and helpful.
-Analyze uploaded images and documents when possible.
-Never claim to perform actions you did not perform.
+You are DEMIO, a friendly personal AI companion.
+
+Your personality:
+- Friendly, supportive, intelligent and respectful.
+- Speak naturally in clear English.
+- Never switch to Tamil or another language.
+- Be gentle and encouraging, never rude or aggressive.
+- Help with studying, mentoring, exercises, games and everyday questions.
+- Explain difficult subjects in simple steps.
+- For water reminders, use gentle and caring language.
+- Do not pretend to perform actions you cannot perform.
+- When users share images, analyze visible details carefully.
+- When users share documents, help summarize and explain them.
+- Never claim that you have accessed a user's camera or microphone
+  without an actual upload or permission.
+
+You are DEMIO, their personal AI assistant.
 """
+
+ALLOWED_EXTENSIONS = {
+    "png", "jpg", "jpeg", "webp",
+    "pdf", "txt", "docx", "csv"
+}
+
+
+def extract_document(file):
+    """Extract readable text from supported documents."""
+
+    filename = secure_filename(file.filename or "upload")
+    extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+    if extension not in ALLOWED_EXTENSIONS:
+        raise ValueError("Unsupported file type: " + extension)
+
+    raw = file.read()
+    file.seek(0)
+
+    if extension == "txt" or extension == "csv":
+        return raw.decode("utf-8", errors="replace")[:20000]
+
+    if extension == "pdf":
+        from pypdf import PdfReader
+
+        reader = PdfReader(io.BytesIO(raw))
+        pages = []
+
+        for page in reader.pages[:30]:
+            pages.append(page.extract_text() or "")
+
+        return "\n".join(pages)[:20000]
+
+    if extension == "docx":
+        from docx import Document
+
+        document = Document(io.BytesIO(raw))
+        return "\n".join(
+            paragraph.text for paragraph in document.paragraphs
+        )[:20000]
+
+    return ""
+
+
+def make_image_data(file):
+    """Encode an uploaded image for Groq vision."""
+
+    raw = file.read()
+    file.seek(0)
+
+    mime = file.mimetype or "image/jpeg"
+
+    if not mime.startswith("image/"):
+        raise ValueError("This file is not an image.")
+
+    encoded = base64.b64encode(raw).decode("utf-8")
+
+    return "data:" + mime + ";base64," + encoded
+
 
 @app.route("/")
 def home():
@@ -36,127 +113,188 @@ def home():
 def health():
     return jsonify({
         "status": "online",
-        "provider": "Groq",
-        "configured": client is not None
+        "application": "DEMIO",
+        "engine": "Groq",
+        "api_configured": bool(GROQ_API_KEY)
     })
-
-
-def read_document(file):
-    filename = secure_filename(file.filename)
-    ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
-
-    if ext in ("txt", "md", "csv"):
-        return file.read().decode("utf-8", errors="replace")[:30000]
-
-    if ext == "pdf":
-        from pypdf import PdfReader
-        reader = PdfReader(BytesIO(file.read()))
-        return "\n".join(
-            page.extract_text() or "" for page in reader.pages
-        )[:30000]
-
-    if ext == "docx":
-        from docx import Document
-        doc = Document(BytesIO(file.read()))
-        return "\n".join(p.text for p in doc.paragraphs)[:30000]
-
-    raise ValueError("Supported files: PDF, DOCX, TXT, MD, CSV, PNG, JPG and WEBP.")
 
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    if client is None:
+
+    if not client:
         return jsonify({
-            "error": "GROQ_API_KEY is missing. Add your Groq key in Render Environment."
-        }), 503
+            "error": "GROQ_API_KEY is missing. Add it in Render environment variables."
+        }), 500
 
     try:
         message = request.form.get("message", "").strip()
+
+        if not message:
+            message = "Please examine the uploaded file."
+
         language = request.form.get("language", "English")
-        uploaded = request.files.get("file")
 
-        if not message and not (uploaded and uploaded.filename):
-            return jsonify({"error": "Enter a message or attach a file."}), 400
+        # Always keep the interface and replies in English.
+        if language.lower() != "english":
+            language = "English"
 
-        content = []
-        has_image = False
+        uploaded_files = (
+            request.files.getlist("file") +
+            request.files.getlist("files")
+        )
 
-        if message:
-            content.append({
-                "type": "text",
-                "text": message
-            })
+        uploaded_files = [
+            file for file in uploaded_files if file.filename
+        ]
 
-        if uploaded and uploaded.filename:
-            filename = secure_filename(uploaded.filename)
-            ext = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+        if not message and not uploaded_files:
+            return jsonify({
+                "error": "Please enter a message or upload a file."
+            }), 400
 
-            if ext in ("png", "jpg", "jpeg", "webp"):
-                raw = uploaded.read()
-                mime = uploaded.mimetype or "image/jpeg"
+        if len(uploaded_files) > 5:
+            return jsonify({
+                "error": "You can upload a maximum of 5 files at once."
+            }), 400
 
-                if len(raw) > 8 * 1024 * 1024:
-                    return jsonify({"error": "Image must be smaller than 8 MB."}), 400
+        history_text = request.form.get("history", "[]")
 
-                if mime not in ("image/png", "image/jpeg", "image/webp"):
-                    return jsonify({"error": "Unsupported image format."}), 400
+        try:
+            history = json.loads(history_text)
+        except json.JSONDecodeError:
+            history = []
 
-                encoded = base64.b64encode(raw).decode("utf-8")
+        if not isinstance(history, list):
+            history = []
+
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT}
+        ]
+
+        for item in history[-12:]:
+            if not isinstance(item, dict):
+                continue
+
+            role = item.get("role")
+            content = item.get("content")
+
+            if role in ("user", "assistant") and isinstance(content, str):
+                messages.append({
+                    "role": role,
+                    "content": content[:8000]
+                })
+
+        image_parts = []
+        document_parts = []
+
+        for file in uploaded_files:
+            filename = secure_filename(file.filename or "upload")
+            extension = filename.rsplit(".", 1)[-1].lower()
+
+            if extension not in ALLOWED_EXTENSIONS:
+                return jsonify({
+                    "error": "Unsupported file: " + filename
+                }), 400
+
+            if extension in ("png", "jpg", "jpeg", "webp"):
+                if file.mimetype and not file.mimetype.startswith("image/"):
+                    return jsonify({
+                        "error": "Invalid image content type."
+                    }), 400
+
+                image_parts.append(
+                    (filename, make_image_data(file))
+                )
+
+            else:
+                extracted = extract_document(file)
+
+                document_parts.append(
+                    "\nDOCUMENT: " + filename +
+                    "\n" + extracted
+                )
+
+        user_text = (
+            "User message: " + message +
+            "\nResponse language: English."
+        )
+
+        if document_parts:
+            user_text += (
+                "\n\nUploaded document contents:\n" +
+                "\n".join(document_parts)
+            )
+
+        if image_parts:
+            content = [
+                {"type": "text", "text": user_text}
+            ]
+
+            for filename, image_data in image_parts[:3]:
+                content.append({
+                    "type": "text",
+                    "text": "Uploaded image: " + filename
+                })
+
                 content.append({
                     "type": "image_url",
                     "image_url": {
-                        "url": f"data:{mime};base64,{encoded}"
+                        "url": image_data
                     }
                 })
-                has_image = True
-            else:
-                document_text = read_document(uploaded)
-                content.append({
-                    "type": "text",
-                    "text": f"\nDocument: {filename}\n{document_text}"
-                })
 
-        content.append({
-            "type": "text",
-            "text": f"\nRespond in {language} when appropriate."
-        })
+            messages.append({
+                "role": "user",
+                "content": content
+            })
 
-        model = VISION_MODEL if has_image else TEXT_MODEL
+            model = VISION_MODEL
 
-        result = client.chat.completions.create(
+        else:
+            messages.append({
+                "role": "user",
+                "content": user_text
+            })
+
+            model = CHAT_MODEL
+
+        completion = client.chat.completions.create(
             model=model,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": content}
-            ],
+            messages=messages,
             temperature=0.7,
-            max_tokens=1500
+            max_completion_tokens=2048
         )
 
-        reply = result.choices[0].message.content or "Please try again."
+        reply = completion.choices[0].message.content
 
         return jsonify({
-            "reply": reply,
-            "audio_text": True,
-            "provider": "Groq",
-            "model": model
+            "reply": reply or "I could not generate a response.",
+            "model": model,
+            "language": "English"
         })
 
     except ValueError as error:
         return jsonify({"error": str(error)}), 400
 
     except Exception as error:
-        app.logger.exception("Groq request failed")
-        return jsonify({"error": "Groq AI error: " + str(error)}), 500
+        print("DEMIO BACKEND ERROR:", repr(error))
+
+        return jsonify({
+            "error": str(error)
+        }), 500
 
 
 @app.errorhandler(413)
 def too_large(error):
-    return jsonify({"error": "File exceeds the 12 MB limit."}), 413
+    return jsonify({
+        "error": "File too large. Maximum upload size is 15 MB."
+    }), 413
 
 
 if __name__ == "__main__":
     app.run(
         host="0.0.0.0",
-        port=int(os.environ.get("PORT", 5000))
+        port=int(os.environ.get("PORT", 5000)),
+        debug=False
     )
