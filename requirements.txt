@@ -1,4 +1,5 @@
-Flask
-groq
-python-dotenv
+flask
+openai
 gunicorn
+pypdf
+python-docx
