@@ -13,8 +13,8 @@ GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "").strip()
 
 client = Groq(api_key=GROQ_API_KEY) if GROQ_API_KEY else None
 
-TEXT_MODEL = "llama-3.3-70b-versatile"
-VISION_MODEL = "meta-llama/llama-4-scout-17b-16e-instruct"
+TEXT_MODEL = "openai/gpt-oss-120b"
+VISION_MODEL = "qwen/qwen3.8-27b"
 
 SYSTEM_PROMPT = """
 You are ULTRON 2099, also known as DEMIO.
