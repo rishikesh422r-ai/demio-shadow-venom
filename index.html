@@ -3,454 +3,444 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#050003">
-<title>ULTRON 2099 | AI CORE</title>
+<title>ULTRON AI SYSTEM</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@400;600;700&display=swap');
-
-:root {
- --red:#ff102d;
- --dark:#050003;
- --panel:rgba(35,0,9,.75);
-}
-
-*{box-sizing:border-box;margin:0;padding:0}
+*{margin:0;padding:0;box-sizing:border-box}
 
 body{
- background:radial-gradient(ellipse at center,#26000b,#080003 65%,#020002);
- color:#ff5267;
- font-family:Rajdhani,sans-serif;
- min-height:100vh;
- overflow-x:hidden;
+ background:#030307;
+ color:#ff253d;
+ font-family:Arial,sans-serif;
+ overflow:hidden;
 }
 
-body:before{
- content:"";
+#hud{
  position:fixed;
  inset:0;
  pointer-events:none;
  z-index:5;
- background:repeating-linear-gradient(
- transparent 0px,transparent 3px,
- rgba(255,0,35,.035) 4px);
+ padding:25px;
 }
 
-.grid{
- position:fixed;
- inset:0;
- background-image:
- linear-gradient(rgba(255,0,35,.06) 1px,transparent 1px),
- linear-gradient(90deg,rgba(255,0,35,.06) 1px,transparent 1px);
- background-size:35px 35px;
- mask-image:radial-gradient(ellipse,black,transparent 85%);
-}
-
-header{
- height:65px;
+.top{
  display:flex;
- align-items:center;
  justify-content:space-between;
- padding:0 18px;
- border-bottom:1px solid rgba(255,0,40,.3);
- background:rgba(5,0,0,.8);
- position:relative;
- z-index:10;
+ border-bottom:1px solid #a80020;
+ padding-bottom:18px;
+ letter-spacing:4px;
+ text-shadow:0 0 12px red;
+ font-weight:bold;
 }
 
-.logo{
- font-family:Orbitron,sans-serif;
- font-size:17px;
- font-weight:900;
+.logo{font-size:25px;color:#ff1835}
+
+.center-title{
+ position:absolute;
+ top:15%;
+ left:50%;
+ transform:translateX(-50%);
+ text-align:center;
+ width:100%;
  letter-spacing:4px;
- color:#ff263f;
+}
+
+.center-title h2{
+ font-size:22px;
  text-shadow:0 0 15px red;
 }
 
-.status{
- font-family:Orbitron;
- font-size:9px;
- letter-spacing:2px;
-}
-
-.dot{
- display:inline-block;
- width:7px;height:7px;
- background:red;
- border-radius:50%;
- box-shadow:0 0 12px red;
- margin-right:7px;
- animation:blink 1s infinite;
-}
-
-main{
- max-width:900px;
- margin:auto;
- padding:24px 15px;
- position:relative;
- z-index:2;
-}
-
-.heading{
- text-align:center;
- font-family:Orbitron;
- font-size:13px;
- letter-spacing:4px;
-}
-
-.subtitle{
- text-align:center;
+.center-title p{
+ margin-top:9px;
  font-size:10px;
- letter-spacing:4px;
- margin-top:8px;
- opacity:.6;
+ letter-spacing:5px;
 }
 
-#ultron-stage{
- height:430px;
- width:100%;
- position:relative;
- overflow:hidden;
- background:radial-gradient(ellipse,rgba(130,0,20,.22),transparent 70%);
-}
-
-#ultron-canvas{
+#scene{
+ position:fixed;
+ inset:0;
  width:100%;
  height:100%;
 }
 
-#ultron-canvas canvas{
- width:100%;
- height:100%;
- display:block;
-}
-
-.hud-label{
+.bottom{
  position:absolute;
- top:48%;
- z-index:2;
- font-family:Orbitron;
- font-size:9px;
- letter-spacing:2px;
- line-height:2;
- color:#ff4058;
- text-shadow:0 0 12px red;
- pointer-events:none;
-}
-
-.hud-left{left:2%}
-.hud-right{right:2%;text-align:right}
-
-.face-caption{
- position:absolute;
- bottom:12px;
- width:100%;
- text-align:center;
- font-family:Orbitron;
- font-size:9px;
- letter-spacing:3px;
- color:#ff4058;
- pointer-events:none;
-}
-
-.core-status{
- text-align:center;
- font-family:Orbitron;
- font-size:10px;
- letter-spacing:3px;
- margin:8px 0 20px;
-}
-
-.panels{
- display:grid;
- grid-template-columns:repeat(3,1fr);
- gap:9px;
- margin-bottom:18px;
+ bottom:25px;
+ left:25px;
+ right:25px;
+ display:flex;
+ gap:12px;
 }
 
 .panel{
- padding:13px 8px;
- border:1px solid rgba(255,0,40,.3);
- background:linear-gradient(140deg,rgba(70,0,15,.4),rgba(5,0,0,.8));
-}
-
-.panel small{
- display:block;
+ flex:1;
+ border:1px solid #8c1025;
+ background:rgba(35,0,8,.65);
+ padding:13px;
  font-size:10px;
  letter-spacing:2px;
- opacity:.7;
 }
 
 .panel strong{
  display:block;
- font-family:Orbitron;
- font-size:14px;
- color:#ff3048;
  margin-top:8px;
-}
-
-.console{
- border:1px solid rgba(255,0,40,.35);
- background:rgba(10,0,4,.9);
- padding:14px;
-}
-
-.console-title{
- font-family:Orbitron;
- font-size:11px;
- letter-spacing:3px;
- border-bottom:1px solid rgba(255,0,40,.3);
- padding-bottom:12px;
-}
-
-#messages{
- height:120px;
- overflow-y:auto;
- padding:12px 0;
  font-size:15px;
+ color:#ff253d;
 }
 
-.message{margin:5px 0}
-.ai{color:#ff4059}
-.user{color:#ffc0c7}
-
-.controls{
- display:flex;
- gap:8px;
-}
-
-input{
- flex:1;
- min-width:0;
- background:#120006;
- border:1px solid #8b1028;
- padding:12px;
- color:white;
- font-family:Rajdhani;
- font-size:16px;
- outline:none;
-}
-
-button{
- border:1px solid #ff2945;
- color:white;
- background:linear-gradient(135deg,#9e001e,#35000c);
- padding:12px 16px;
- font-family:Orbitron;
- font-size:10px;
- cursor:pointer;
-}
-
-button:active{background:#ff1536}
-
-.mic{
+.status{
+ position:absolute;
+ bottom:115px;
  width:100%;
- margin-top:10px;
-}
-
-footer{
  text-align:center;
- margin:20px 0;
- font-size:9px;
+ font-size:12px;
  letter-spacing:3px;
- opacity:.5;
+ text-shadow:0 0 12px red;
 }
 
-@keyframes blink{50%{opacity:.2}}
-
-@media(max-width:500px){
- #ultron-stage{height:350px}
- .hud-label{font-size:7px}
- .logo{font-size:14px}
- .panel{padding:9px 5px}
+@media(max-width:600px){
+ #hud{padding:15px}
+ .logo{font-size:18px}
+ .center-title{top:17%}
+ .center-title h2{font-size:15px}
+ .bottom{left:12px;right:12px;gap:5px;bottom:15px}
+ .panel{padding:8px;font-size:8px}
  .panel strong{font-size:11px}
- .panel small{font-size:8px}
+ .status{bottom:90px;font-size:9px}
 }
 </style>
 </head>
 
 <body>
 
-<div class="grid"></div>
+<canvas id="scene"></canvas>
 
-<header>
- <div class="logo">ULTRON<span style="color:white">.</span></div>
+<div id="hud">
+
+ <div class="top">
+  <div class="logo">ULTRON.</div>
+  <div>AI CORE // 2099</div>
+ </div>
+
+ <div class="center-title">
+  <h2>ARTIFICIAL INTELLIGENCE</h2>
+  <p>ADVANCED NEURAL SYSTEM</p>
+ </div>
+
  <div class="status">
-  <span class="dot"></span>AI CORE ONLINE
- </div>
-</header>
-
-<main>
-
- <div class="heading">ARTIFICIAL INTELLIGENCE</div>
- <div class="subtitle">AUTONOMOUS NEURAL SYSTEM // 2099</div>
-
- <!-- ULTRON 3D FACE -->
- <section id="ultron-stage">
-  <div class="hud-label hud-left">
-   NEURAL LINK<br>99.9%
-  </div>
-
-  <div id="ultron-canvas"></div>
-
-  <div class="hud-label hud-right">
-   ENTITY<br>ULTRON 2099
-  </div>
-
-  <div class="face-caption">
-   ADVANCED ANDROID INTELLIGENCE
-  </div>
- </section>
-
- <div class="core-status">
-  <span class="dot"></span>
-  <span id="state">AWAITING COMMAND</span>
+  <div>ADVANCED ANDROID INTELLIGENCE</div>
+  <br>
+  <div id="status">● SYSTEM INITIALIZING</div>
  </div>
 
- <section class="panels">
-  <div class="panel">
-   <small>NEURAL CORE</small>
-   <strong>ACTIVE</strong>
-  </div>
-  <div class="panel">
-   <small>AI ENGINE</small>
-   <strong>GROQ</strong>
-  </div>
-  <div class="panel">
-   <small>SECURITY</small>
-   <strong>ONLINE</strong>
-  </div>
- </section>
+ <div class="bottom">
+  <div class="panel">NEURAL CORE<strong>ACTIVE</strong></div>
+  <div class="panel">AI ENGINE<strong>ONLINE</strong></div>
+  <div class="panel">SECURITY<strong>ONLINE</strong></div>
+ </div>
 
- <section class="console">
-  <div class="console-title">◈ ULTRON COMMAND TERMINAL</div>
+</div>
 
-  <div id="messages">
-   <div class="message ai">ULTRON: Neural systems initialized.</div>
-   <div class="message ai">ULTRON: Welcome, Creator.</div>
-  </div>
+<script type="module">
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-  <div class="controls">
-   <input id="command" placeholder="Command your AI..." autocomplete="off">
-   <button onclick="send()">SEND</button>
-  </div>
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x030307);
 
-  <button class="mic" onclick="listen()">
-   ◉ ACTIVATE VOICE COMMAND
-  </button>
- </section>
+const camera = new THREE.PerspectiveCamera(
+ 38, window.innerWidth/window.innerHeight, .1, 100
+);
+camera.position.set(0,0,10);
 
- <footer>
-  ULTRON 2099 // ADVANCED AI SYSTEMS
- </footer>
+const renderer = new THREE.WebGLRenderer({
+ canvas:document.getElementById('scene'),
+ antialias:true,
+ alpha:true
+});
 
-</main>
+renderer.setSize(window.innerWidth,window.innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputColorSpace=THREE.SRGBColorSpace;
 
-<!-- THREE.JS ENGINE -->
-<script type="module" src="/static/app.js"></script>
+scene.add(new THREE.AmbientLight(0x555566,2));
 
-<script>
-let conversationHistory = [];
+const redLight=new THREE.PointLight(0xff001c,45,15);
+redLight.position.set(0,1,5);
+scene.add(redLight);
 
-const messages = document.getElementById("messages");
-const state = document.getElementById("state");
+const blueLight=new THREE.PointLight(0x162bff,12,15);
+blueLight.position.set(-4,1,3);
+scene.add(blueLight);
 
-function addMessage(text,type){
- const div=document.createElement("div");
- div.className="message "+type;
- div.textContent=text;
- messages.appendChild(div);
- messages.scrollTop=messages.scrollHeight;
+const robot=new THREE.Group();
+scene.add(robot);
+
+const metal=new THREE.MeshStandardMaterial({
+ color:0x555b66,
+ metalness:.95,
+ roughness:.25
+});
+
+const darkMetal=new THREE.MeshStandardMaterial({
+ color:0x10131b,
+ metalness:.95,
+ roughness:.2
+});
+
+const silver=new THREE.MeshStandardMaterial({
+ color:0x9ca4b0,
+ metalness:1,
+ roughness:.2
+});
+
+const red=new THREE.MeshStandardMaterial({
+ color:0xff001e,
+ emissive:0xff001e,
+ emissiveIntensity:4,
+ metalness:.4
+});
+
+const black=new THREE.MeshStandardMaterial({
+ color:0x030307,
+ metalness:.8,
+ roughness:.2
+});
+
+function sphere(parent,material,pos,scale){
+ const m=new THREE.Mesh(
+  new THREE.SphereGeometry(1,32,24),
+  material
+ );
+ m.position.set(...pos);
+ m.scale.set(...scale);
+ parent.add(m);
+ return m;
 }
 
-async function send(){
- const input=document.getElementById("command");
- const text=input.value.trim();
+function box(parent,material,pos,scale){
+ const m=new THREE.Mesh(
+  new THREE.BoxGeometry(...scale),
+  material
+ );
+ m.position.set(...pos);
+ parent.add(m);
+ return m;
+}
 
- if(!text)return;
+// Main robotic head
+sphere(robot,metal,[0,0,0],[1.65,2.05,.85]);
 
- addMessage("YOU: "+text,"user");
- input.value="";
- state.textContent="PROCESSING";
+// Forehead armour
+sphere(robot,silver,[0,1.35,.48],[1.25,.62,.42]);
 
- try{
-  const response=await fetch("/chat",{
-   method:"POST",
-   headers:{"Content-Type":"application/json"},
-   body:JSON.stringify({
-    message:text,
-    history:conversationHistory
-   })
-  });
+// Central forehead plate
+sphere(robot,darkMetal,[0,1.45,.82],[.5,.38,.16]);
 
-  const data=await response.json();
+// Jaw
+sphere(robot,darkMetal,[0,-1.05,.35],[1.25,.85,.65]);
 
-  if(!response.ok){
-   throw new Error(data.error||"AI connection failed");
-  }
+// Chin armour
+sphere(robot,silver,[0,-1.62,.55],[.72,.28,.32]);
 
-  addMessage("ULTRON: "+data.reply,"ai");
+// Cheeks
+for(const side of [-1,1]){
+ sphere(robot,silver,[side*1.05,-.35,.5],[.48,.85,.3]);
+ sphere(robot,darkMetal,[side*.8,-.95,.7],[.45,.42,.25]);
 
-  conversationHistory.push(
-   {role:"user",content:text},
-   {role:"assistant",content:data.reply}
-  );
+ // Side temple armour
+ sphere(robot,metal,[side*1.45,.55,0],[.28,.75,.65]);
 
-  conversationHistory=conversationHistory.slice(-12);
-
-  if(window.setUltronSpeaking){
-   window.setUltronSpeaking(true);
-   setTimeout(()=>window.setUltronSpeaking(false),
-    Math.min(1500+data.reply.length*35,12000));
-  }
-
-  state.textContent="CORE ONLINE";
-
- }catch(error){
-  addMessage("ULTRON ERROR: "+error.message,"ai");
-  state.textContent="CONNECTION ERROR";
+ // Side mechanical details
+ for(let i=0;i<3;i++){
+  box(robot,silver,[side*1.53,.25-i*.18,.48],[.12,.07,.15]);
  }
 }
 
-function listen(){
- const SpeechRecognition=
-  window.SpeechRecognition||
-  window.webkitSpeechRecognition;
+// Eyes
+const eyes=[];
 
- if(!SpeechRecognition){
-  addMessage("ULTRON: Voice recognition unavailable.","ai");
-  return;
- }
+for(const side of [-1,1]){
+ const eye=sphere(
+  robot,red,[side*.67,.55,.83],[.39,.19,.15]
+ );
+ eyes.push(eye);
 
- const recognition=new SpeechRecognition();
- recognition.lang="en-IN";
+ // Eye dark socket
+ sphere(robot,black,[side*.67,.55,.72],[.48,.27,.12]);
 
- recognition.onstart=()=>{
-  state.textContent="LISTENING";
- };
+ // Glowing eye placed in front
+ sphere(robot,red,[side*.67,.55,.91],[.3,.12,.12]);
 
- recognition.onresult=e=>{
-  document.getElementById("command").value=
-   e.results[0][0].transcript;
-  send();
- };
+ // Brow armour
+ const brow=sphere(
+  robot,silver,[side*.68,.88,.76],[.57,.16,.23]
+ );
+ brow.rotation.z=side*.12;
 
- recognition.onerror=()=>{
-  state.textContent="VOICE ERROR";
- };
-
- recognition.onend=()=>{
-  if(state.textContent==="LISTENING"){
-   state.textContent="CORE ONLINE";
-  }
- };
-
- recognition.start();
+ // Under-eye armour
+ sphere(robot,darkMetal,[side*.7,.22,.77],[.5,.12,.16]);
 }
 
-document.getElementById("command")
-.addEventListener("keydown",e=>{
- if(e.key==="Enter")send();
+// Nose bridge
+sphere(robot,silver,[0,.15,.8],[.18,.65,.23]);
+sphere(robot,darkMetal,[0,-.28,.92],[.27,.25,.2]);
+
+// Mouth mechanical grille
+box(robot,black,[0,-1.1,.88],[.85,.27,.13]);
+
+for(let i=-3;i<=3;i++){
+ box(robot,silver,[i*.115,-1.1,.99],[.035,.2,.035]);
+}
+
+// Facial side vents
+for(const side of [-1,1]){
+ for(let i=0;i<4;i++){
+  box(robot,darkMetal,[side*.98,-1.1+i*.12,.83],[.18,.045,.08]);
+ }
+}
+
+// Head crown
+sphere(robot,metal,[0,1.8,.05],[.65,.27,.5]);
+
+// Neck
+sphere(robot,darkMetal,[0,-2.05,0],[.65,.35,.5]);
+
+// Neck rings
+for(let i=0;i<3;i++){
+ const ring=new THREE.Mesh(
+  new THREE.TorusGeometry(.55+i*.05,.045,8,48),
+  silver
+ );
+ ring.position.set(0,-2.1-i*.12,0);
+ robot.add(ring);
+}
+
+// Scan light
+const scanMaterial=new THREE.MeshBasicMaterial({
+ color:0xff001e,
+ transparent:true,
+ opacity:.45,
+ side:THREE.DoubleSide
+});
+
+const scan=new THREE.Mesh(
+ new THREE.PlaneGeometry(3.2,.025),
+ scanMaterial
+);
+scan.position.set(0,0,1.12);
+robot.add(scan);
+
+// Floating HUD rings
+const rings=[];
+
+for(let i=0;i<3;i++){
+ const ring=new THREE.Mesh(
+  new THREE.TorusGeometry(2.25+i*.2,.009,8,120),
+  new THREE.MeshBasicMaterial({
+   color:0xff001e,
+   transparent:true,
+   opacity:.4
+  })
+ );
+ ring.position.z=-.8-i*.1;
+ ring.scale.y=.85;
+ robot.add(ring);
+ rings.push(ring);
+}
+
+// Background particles
+const particleCount=700;
+const positions=new Float32Array(particleCount*3);
+
+for(let i=0;i<particleCount;i++){
+ positions[i*3]=(Math.random()-.5)*12;
+ positions[i*3+1]=(Math.random()-.5)*9;
+ positions[i*3+2]=-2-Math.random()*5;
+}
+
+const particleGeometry=new THREE.BufferGeometry();
+particleGeometry.setAttribute(
+ 'position',
+ new THREE.BufferAttribute(positions,3)
+);
+
+const particles=new THREE.Points(
+ particleGeometry,
+ new THREE.PointsMaterial({
+  color:0xff1938,
+  size:.025,
+  transparent:true,
+  opacity:.7
+ })
+);
+
+scene.add(particles);
+
+// Mouse tracking
+let mouseX=0,mouseY=0;
+
+window.addEventListener('mousemove',e=>{
+ mouseX=(e.clientX/window.innerWidth-.5)*2;
+ mouseY=(e.clientY/window.innerHeight-.5)*2;
+});
+
+window.addEventListener('touchmove',e=>{
+ if(e.touches.length){
+  mouseX=(e.touches[0].clientX/window.innerWidth-.5)*2;
+  mouseY=(e.touches[0].clientY/window.innerHeight-.5)*2;
+ }
+},{passive:true});
+
+// Animation
+const clock=new THREE.Clock();
+
+function animate(){
+ requestAnimationFrame(animate);
+
+ const t=clock.getElapsedTime();
+
+ // Actual 3D head movement
+ robot.rotation.y+=
+  (mouseX*.35-robot.rotation.y)*.045;
+
+ robot.rotation.x+=
+  (-mouseY*.18-robot.rotation.x)*.045;
+
+ robot.position.y=Math.sin(t*.8)*.06;
+
+ // Eye pulsing
+ eyes.forEach((eye,i)=>{
+  eye.material.emissiveIntensity=
+   2.5+Math.sin(t*4)*1.5;
+ });
+
+ // Scanning animation
+ scan.position.y=Math.sin(t*1.3)*1.55;
+
+ // HUD ring rotation
+ rings.forEach((ring,i)=>{
+  ring.rotation.z=t*(i%2===0?.12:-.12);
+ });
+
+ // Red light pulse
+ redLight.intensity=38+Math.sin(t*3)*10;
+
+ particles.rotation.y=t*.015;
+
+ renderer.render(scene,camera);
+}
+
+animate();
+
+document.getElementById('status').textContent=
+'● NEURAL SYSTEM ONLINE';
+
+window.addEventListener('resize',()=>{
+ camera.aspect=window.innerWidth/window.innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(window.innerWidth,window.innerHeight);
+ renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 });
 </script>
 
