@@ -248,7 +248,19 @@ async function send(text){
   try{
     let data;
     if (DEMO){ await new Promise(r => setTimeout(r, 1100));
-      data = {reply: m ? (m.type === "video" ? "Video received. In the live system I would analyse its frames and answer your question." : "Image received. In the live system I would analyse it and answer your question.") : "Demo response. In voice mode I answer aloud. In chat mode you get text only."}; }
+      async function getReply(text){
+  try{
+    const r = await fetch("/chat", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({message: text})
+    });
+    const d = await r.json();
+    return d.reply || d.error || "No reply";
+  }catch(e){
+    return "Connection error. Try again.";
+  }
+}
     else { const res = await fetch(API_URL, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({message: text, image: m ? (m.type === "video" ? m.frames[0] || null : m.src) : null, frames: m && m.type === "video" ? m.frames : null, media_type: m ? m.type : null, profile: {name: me.name}, mode, history: history.slice(-12)})}); data = await res.json(); }
     const reply = data.reply || data.response || data.message || "No response received.";
     history.push({role: "assistant", content: reply}); thinking = false; add("assistant", reply);
