@@ -1,278 +1,549 @@
-import * as THREE from
-"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js";
+"use strict";
 
-const container = document.getElementById("ultron-canvas");
+/* DEMIO FRONTEND CONTROLLER */
 
-if (!container) {
-  throw new Error("ULTRON canvas not found");
-}
+const $ = id => document.getElementById(id);
+const API = "/api/chat";
 
-// SCENE
-const scene = new THREE.Scene();
+let currentMode = "operating";
+let conversationHistory = [];
+let selectedFiles = [];
+let imageFiles = [];
+let recognition = null;
+let listening = false;
+let busy = false;
+let waterSeconds = 3600;
+let memorySequence = [];
+let memoryInput = [];
+let quizAnswer = null;
 
-const camera = new THREE.PerspectiveCamera(
-  35,
-  container.clientWidth / container.clientHeight,
-  0.1,
-  100
-);
+function openMode(mode) {
+  currentMode = mode;
 
-camera.position.set(0, 0, 5.2);
-
-const renderer = new THREE.WebGLRenderer({
-  antialias: true,
-  alpha: true
-});
-
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setSize(container.clientWidth, container.clientHeight);
-renderer.outputColorSpace = THREE.SRGBColorSpace;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.5;
-
-container.appendChild(renderer.domElement);
-
-// LIGHTING
-scene.add(new THREE.AmbientLight(0x87909c, 2));
-
-function addLight(color, intensity, x, y, z) {
-  const light = new THREE.PointLight(color, intensity, 15);
-  light.position.set(x, y, z);
-  scene.add(light);
-}
-
-addLight(0xff001c, 65, 0, 1, 3);
-addLight(0x9baac5, 90, -3, 2, 3);
-addLight(0xff142f, 80, 3, 0, 2);
-addLight(0x343c55, 90, 0, 2, -3);
-
-// MATERIALS
-const titanium = new THREE.MeshStandardMaterial({
-  color: 0x929ba5,
-  metalness: 0.95,
-  roughness: 0.24
-});
-
-const darkMetal = new THREE.MeshStandardMaterial({
-  color: 0x171a20,
-  metalness: 0.95,
-  roughness: 0.3
-});
-
-const silver = new THREE.MeshStandardMaterial({
-  color: 0xd4d9e0,
-  metalness: 0.95,
-  roughness: 0.2
-});
-
-const redMetal = new THREE.MeshStandardMaterial({
-  color: 0x720015,
-  metalness: 0.9,
-  roughness: 0.25,
-  emissive: 0x42000c,
-  emissiveIntensity: 0.8
-});
-
-const eyeMaterial = new THREE.MeshStandardMaterial({
-  color: 0xff001e,
-  emissive: 0xff001e,
-  emissiveIntensity: 5
-});
-
-// HEAD
-const head = new THREE.Group();
-scene.add(head);
-
-function sphere(parent, material, pos, scale) {
-  const mesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 48, 32),
-    material
+  document.querySelectorAll(".panel").forEach(p =>
+    p.classList.remove("active-panel")
   );
 
-  mesh.position.set(...pos);
-  mesh.scale.set(...scale);
-  parent.add(mesh);
-
-  return mesh;
-}
-
-function box(parent, material, pos, size, rotation = 0) {
-  const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(...size),
-    material
+  document.querySelectorAll(".nav").forEach(b =>
+    b.classList.remove("active")
   );
 
-  mesh.position.set(...pos);
-  mesh.rotation.z = rotation;
-  parent.add(mesh);
+  $(mode).classList.add("active-panel");
 
-  return mesh;
+  const nav = document.querySelector('[data-mode="' + mode + '"]');
+  if (nav) nav.classList.add("active");
+
+  $("operatingStatus").textContent = mode.toUpperCase() + " MODE ACTIVE";
+
+  if (mode !== "talk") stopListening();
 }
 
-// METALLIC SKULL
-sphere(head, titanium, [0, 0.05, 0], [0.88, 1.18, 0.58]);
-
-sphere(head, silver, [0, 0.78, 0.25], [0.69, 0.34, 0.35]);
-
-// FOREHEAD REACTOR
-sphere(head, darkMetal, [0, 0.78, 0.57], [0.18, 0.14, 0.06]);
-
-sphere(head, eyeMaterial, [0, 0.78, 0.625], [0.075, 0.045, 0.025]);
-
-// EYES
-const eyes = [];
-
-for (const side of [-1, 1]) {
-  const x = side * 0.38;
-
-  sphere(head, darkMetal, [x, 0.29, 0.48], [0.30, 0.22, 0.16]);
-
-  sphere(head, redMetal, [x, 0.29, 0.59], [0.245, 0.155, 0.08]);
-
-  const eye = sphere(
-    head,
-    eyeMaterial,
-    [x, 0.29, 0.66],
-    [0.15, 0.085, 0.045]
-  );
-
-  eyes.push(eye);
-
-  const ring = new THREE.Mesh(
-    new THREE.TorusGeometry(0.19, 0.018, 8, 48),
-    silver
-  );
-
-  ring.position.set(x, 0.29, 0.64);
-  head.add(ring);
-
-  box(head, darkMetal, [x, 0.52, 0.56], [0.52, 0.10, 0.16], side * -0.16);
-
-  box(head, silver, [x, 0.57, 0.54], [0.40, 0.035, 0.09], side * -0.16);
-}
-
-// NOSE
-sphere(head, darkMetal, [0, -0.02, 0.57], [0.18, 0.37, 0.17]);
-
-sphere(head, silver, [0, -0.17, 0.68], [0.17, 0.13, 0.10]);
-
-// CHEEKS AND SIDE ARMOR
-for (const side of [-1, 1]) {
-  sphere(head, silver, [side * 0.65, -0.17, 0.32], [0.24, 0.43, 0.20]);
-
-  sphere(head, darkMetal, [side * 0.72, -0.35, 0.43], [0.17, 0.23, 0.12]);
-
-  for (let i = 0; i < 4; i++) {
-    box(
-      head,
-      redMetal,
-      [side * 0.72, -0.12 - i * 0.075, 0.55],
-      [0.13, 0.018, 0.025],
-      side * 0.2
-    );
-  }
-
-  sphere(head, darkMetal, [side * 0.82, 0.23, 0], [0.15, 0.43, 0.42]);
-
-  sphere(head, titanium, [side * 0.88, 0.20, 0.15], [0.11, 0.27, 0.24]);
-
-  sphere(head, redMetal, [side * 0.91, 0.20, 0.34], [0.07, 0.13, 0.07]);
-}
-
-// MOVING MECHANICAL JAW
-const jaw = new THREE.Group();
-jaw.position.set(0, -0.43, 0.48);
-head.add(jaw);
-
-sphere(jaw, darkMetal, [0, -0.12, 0], [0.60, 0.35, 0.19]);
-
-sphere(jaw, titanium, [0, -0.26, 0.03], [0.55, 0.17, 0.18]);
-
-for (const side of [-1, 1]) {
-  sphere(jaw, redMetal, [side * 0.37, -0.12, 0.14], [0.055, 0.055, 0.035]);
-
-  box(jaw, silver, [side * 0.29, -0.27, 0.15], [0.15, 0.045, 0.04]);
-}
-
-// MOUTH
-sphere(
-  head,
-  new THREE.MeshStandardMaterial({ color: 0x020002 }),
-  [0, -0.43, 0.62],
-  [0.36, 0.075, 0.06]
-);
-
-// TEETH
-for (let i = -3; i <= 3; i++) {
-  box(head, silver, [i * 0.085, -0.41, 0.68], [0.045, 0.045, 0.035]);
-}
-
-// CHIN
-sphere(jaw, redMetal, [0, -0.37, 0.15], [0.17, 0.055, 0.035]);
-
-// HEAD DETAILS
-for (const side of [-1, 1]) {
-  box(head, darkMetal, [side * 0.25, 0.93, 0.23], [0.035, 0.25, 0.08], side * 0.25);
-
-  box(head, redMetal, [side * 0.25, 0.96, 0.29], [0.014, 0.16, 0.025], side * 0.25);
-}
-
-// MOUSE TRACKING
-let mouseX = 0;
-let mouseY = 0;
-let speaking = false;
-
-window.addEventListener("pointermove", e => {
-  mouseX = (e.clientX / window.innerWidth - 0.5) * 0.45;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 0.2;
+document.querySelectorAll("[data-mode]").forEach(button => {
+  button.addEventListener("click", () => openMode(button.dataset.mode));
 });
 
-// AI SPEAKING CONTROL
-window.setUltronSpeaking = function(value) {
-  speaking = Boolean(value);
-};
+document.querySelectorAll("[data-open]").forEach(button => {
+  button.addEventListener("click", () => openMode(button.dataset.open));
+});
 
-// ANIMATION
-const clock = new THREE.Clock();
+/* CHAT */
 
-function animate() {
-  requestAnimationFrame(animate);
+function addBubble(text, type, files=[]) {
+  const div = document.createElement("div");
+  div.className = "bubble " + type;
 
-  const t = clock.getElapsedTime();
+  const name = document.createElement("b");
+  name.textContent = type === "bot" ? "DEMIO" : "YOU";
+  div.appendChild(name);
 
-  head.rotation.y += (mouseX - head.rotation.y) * 0.035;
-  head.rotation.x += (-mouseY - head.rotation.x) * 0.035;
+  const content = document.createElement("div");
+  content.textContent = text;
+  div.appendChild(content);
 
-  head.position.y = Math.sin(t * 1.2) * 0.025;
-
-  const glow = 3.5 + Math.sin(t * 3) * 1.5;
-
-  eyes.forEach(eye => {
-    eye.material.emissiveIntensity = glow;
+  files.forEach(file => {
+    if (file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      div.appendChild(img);
+    } else {
+      const attachment = document.createElement("div");
+      attachment.textContent = "📎 " + file.name;
+      div.appendChild(attachment);
+    }
   });
 
-  const movement = speaking
-    ? Math.abs(Math.sin(t * 13)) * 0.12
-    : 0;
-
-  jaw.rotation.x += (movement - jaw.rotation.x) * 0.2;
-
-  renderer.render(scene, camera);
+  $("messages").appendChild(div);
+  $("messages").scrollTop = $("messages").scrollHeight;
 }
 
-animate();
+function showTalkText(text) {
+  const line = document.createElement("p");
+  line.textContent = text;
+  $("talkMessages").appendChild(line);
+}
 
-// RESPONSIVE DISPLAY
-const resizeObserver = new ResizeObserver(() => {
-  const width = container.clientWidth;
-  const height = container.clientHeight;
+async function askDemio(message, files=[], destination="messages") {
+  if (busy) return;
 
-  if (!width || !height) return;
+  if (!message.trim() && !files.length) return;
 
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
+  busy = true;
 
-  renderer.setSize(width, height);
+  if (destination === "messages") {
+    addBubble(message || "Please review my uploaded files.", "user", files);
+    $("typing").hidden = false;
+  } else {
+    showTalkText("You: " + (message || "Uploaded files"));
+  }
+
+  const form = new FormData();
+  form.append("message", message || "Please examine the attached file.");
+  form.append("language", "English");
+  form.append("history", JSON.stringify(conversationHistory.slice(-12)));
+
+  files.forEach(file => form.append("file", file));
+
+  try {
+    const response = await fetch(API, {
+      method: "POST",
+      body: form
+    });
+
+    const raw = await response.text();
+    let data;
+
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      throw new Error("Invalid server response: " + raw.slice(0, 300));
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        "HTTP " + response.status + ": " +
+        (data.error || data.detail || data.message || raw)
+      );
+    }
+
+    if (!data.reply) {
+      throw new Error("The backend did not return a reply.");
+    }
+
+    conversationHistory.push(
+      {role: "user", content: message},
+      {role: "assistant", content: data.reply}
+    );
+
+    if (conversationHistory.length > 20) {
+      conversationHistory = conversationHistory.slice(-20);
+    }
+
+    if (destination === "messages") {
+      addBubble(data.reply, "bot");
+    } else if (destination === "talk") {
+      showTalkText("DEMIO: " + data.reply);
+      speak(data.reply);
+    } else {
+      $(destination).textContent = data.reply;
+    }
+
+    $("operatingStatus").textContent = "RESPONSE RECEIVED";
+
+  } catch (error) {
+    console.error(error);
+
+    const errorText = error.message;
+
+    if (destination === "messages") {
+      addBubble("Connection error: " + errorText, "bot");
+    } else if (destination === "talk") {
+      showTalkText("DEMIO connection error: " + errorText);
+    } else {
+      $(destination).textContent = "Error: " + errorText;
+    }
+
+  } finally {
+    busy = false;
+    $("typing").hidden = true;
+  }
+}
+
+$("sendButton").addEventListener("click", () => sendChat());
+
+$("messageInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") sendChat();
 });
 
-resizeObserver.observe(container);
+async function sendChat() {
+  const message = $("messageInput").value.trim();
+  const files = [...selectedFiles];
+
+  if (!message && !files.length) return;
+
+  $("messageInput").value = "";
+  selectedFiles = [];
+  renderFileList();
+
+  await askDemio(message, files);
+}
+
+$("newChat").addEventListener("click", newConversation);
+$("clearChat").addEventListener("click", newConversation);
+
+function newConversation() {
+  conversationHistory = [];
+  $("messages").innerHTML = "";
+  $("talkMessages").innerHTML = "";
+  selectedFiles = [];
+  renderFileList();
+  speechSynthesis.cancel();
+
+  addBubble(
+    "A fresh conversation is ready. What would you like to discuss?",
+    "bot"
+  );
+}
+
+/* FILE UPLOAD */
+
+$("fileInput").addEventListener("change", e => {
+  selectedFiles.push(...Array.from(e.target.files || []));
+  renderFileList();
+  e.target.value = "";
+});
+
+function renderFileList() {
+  $("fileList").innerHTML = "";
+
+  selectedFiles.forEach((file, index) => {
+    const tag = document.createElement("span");
+    tag.textContent = file.name + " ×";
+    tag.style.marginRight = "12px";
+    tag.style.cursor = "pointer";
+
+    tag.onclick = () => {
+      selectedFiles.splice(index, 1);
+      renderFileList();
+    };
+
+    $("fileList").appendChild(tag);
+  });
+}
+
+/* IMAGE MODE */
+
+$("imageInput").addEventListener("change", e => {
+  imageFiles = Array.from(e.target.files || []);
+
+  $("imagePreviews").innerHTML = "";
+
+  imageFiles.forEach(file => {
+    if (file.type.startsWith("image/")) {
+      const img = document.createElement("img");
+      img.src = URL.createObjectURL(file);
+      $("imagePreviews").appendChild(img);
+    }
+  });
+});
+
+$("analyzeImages").addEventListener("click", async () => {
+  if (!imageFiles.length) {
+    $("imageResult").textContent = "Please choose an image or document first.";
+    return;
+  }
+
+  const question = $("imageQuestion").value.trim() ||
+    "Please describe and analyze these uploaded files.";
+
+  await askDemio(question, imageFiles, "imageResult");
+});
+
+/* VOICE INPUT */
+
+function createRecognition() {
+  const Speech = window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if (!Speech) {
+    alert("Voice recognition requires a supported browser such as Chrome.");
+    return null;
+  }
+
+  const r = new Speech();
+  r.lang = "en-US";
+  r.continuous = false;
+  r.interimResults = true;
+
+  r.onstart = () => {
+    listening = true;
+    $("talkMic").classList.add("active");
+    $("talkStatus").textContent = "Listening. Speak now...";
+    $("operatingStatus").textContent = "LISTENING";
+    document.querySelector(".hero")?.classList.add("speaking");
+  };
+
+  r.onresult = e => {
+    let transcript = "";
+
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      transcript += e.results[i][0].transcript;
+    }
+
+    if (currentMode === "talk") {
+      $("talkStatus").textContent = transcript;
+      r.finalTranscript = transcript;
+    } else {
+      $("messageInput").value = transcript;
+    }
+  };
+
+  r.onerror = e => {
+    $("talkStatus").textContent = "Microphone error: " + e.error;
+  };
+
+  r.onend = () => {
+    listening = false;
+    $("talkMic").classList.remove("active");
+    document.querySelector(".hero")?.classList.remove("speaking");
+
+    const transcript = r.finalTranscript || "";
+
+    if (currentMode === "talk" && transcript.trim()) {
+      askDemio(transcript, [], "talk");
+    }
+
+    $("talkStatus").textContent = "Tap the microphone to speak again.";
+  };
+
+  return r;
+}
+
+function startListening() {
+  if (listening) return;
+
+  recognition = createRecognition();
+  if (!recognition) return;
+
+  try {
+    recognition.start();
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+function stopListening() {
+  if (recognition && listening) {
+    recognition.stop();
+  }
+}
+
+$("talkMic").addEventListener("click", () => {
+  if (listening) stopListening();
+  else startListening();
+});
+
+$("voiceInput").addEventListener("click", startListening);
+
+/* VOICE OUTPUT */
+
+function speak(text) {
+  if (!("speechSynthesis" in window)) return;
+
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.95;
+  utterance.pitch = 0.85;
+
+  utterance.onstart = () => {
+    $("talkStatus").textContent = "DEMIO is speaking...";
+    document.querySelector(".hero")?.classList.add("speaking");
+  };
+
+  utterance.onend = () => {
+    $("talkStatus").textContent = "Tap the microphone to speak again.";
+    document.querySelector(".hero")?.classList.remove("speaking");
+  };
+
+  speechSynthesis.speak(utterance);
+}
+
+/* MENTORING */
+
+document.querySelectorAll("[data-prompt]").forEach(button => {
+  button.addEventListener("click", async () => {
+    openMode("mentor");
+    await askDemio(button.dataset.prompt, [], "mentorResult");
+  });
+});
+
+$("mentorSend").addEventListener("click", sendMentor);
+
+$("mentorInput").addEventListener("keydown", e => {
+  if (e.key === "Enter") sendMentor();
+});
+
+function sendMentor() {
+  const message = $("mentorInput").value.trim();
+  if (!message) return;
+
+  $("mentorInput").value = "";
+  return askDemio(message, [], "mentorResult");
+}
+
+/* GAMES AND EXERCISES */
+
+$("memoryStart").addEventListener("click", () => {
+  memorySequence = Array.from({length:5}, () =>
+    Math.floor(Math.random() * 9) + 1
+  );
+
+  $("memoryArea").textContent =
+    "Remember these numbers: " + memorySequence.join("  ");
+
+  setTimeout(() => {
+    $("memoryArea").innerHTML = "";
+
+    const input = document.createElement("input");
+    input.placeholder = "Type the numbers separated by spaces";
+    input.id = "memoryAnswer";
+
+    const check = document.createElement("button");
+    check.className = "primary";
+    check.textContent = "CHECK";
+
+    check.onclick = () => {
+      const answer = $("memoryAnswer").value
+        .trim().split(/\s+/).join("");
+
+      const correct = memorySequence.join("");
+
+      $("memoryArea").textContent = answer === correct
+        ? "Excellent! You remembered all the numbers! 🎉"
+        : "Good try! The correct sequence was " + correct + ". Try again!";
+
+    };
+
+    $("memoryArea").append(input, check);
+  }, 4000);
+});
+
+const questions = [
+  {q:"Which planet is known as the Red Planet?",a:["Earth","Mars","Venus"],correct:1},
+  {q:"How many sides does a hexagon have?",a:["Five","Six","Eight"],correct:1},
+  {q:"What is 12 × 8?",a:["84","96","108"],correct:1},
+  {q:"Which gas do plants absorb?",a:["Oxygen","Carbon dioxide","Hydrogen"],correct:1}
+];
+
+$("quizStart").addEventListener("click", () => {
+  const q = questions[Math.floor(Math.random()*questions.length)];
+  $("quizArea").innerHTML = "";
+
+  const title = document.createElement("p");
+  title.textContent = q.q;
+  $("quizArea").appendChild(title);
+
+  q.a.forEach((answer,index) => {
+    const button = document.createElement("button");
+    button.className = "outline";
+    button.textContent = answer;
+    button.style.margin = "4px";
+
+    button.onclick = () => {
+      $("quizArea").textContent = index === q.correct
+        ? "Correct! Fantastic work! ⭐"
+        : "Not quite. The correct answer is " + q.a[q.correct] + ".";
+    };
+
+    $("quizArea").appendChild(button);
+  });
+});
+
+$("exerciseStart").addEventListener("click", () => {
+  const activities = [
+    "Stand up and gently stretch your arms.",
+    "Take a short walk if it is comfortable.",
+    "Relax your shoulders and gently move your neck.",
+    "Take a short break away from your screen."
+  ];
+
+  $("exerciseArea").textContent =
+    activities[Math.floor(Math.random()*activities.length)] +
+    " Take it at your own pace.";
+});
+
+$("brainStart").addEventListener("click", () => {
+  const prompts = [
+    "What comes next: 2, 4, 8, 16, __?",
+    "If you have 3 boxes with 4 apples each, how many apples are there?",
+    "What is the opposite of 'expand'?",
+    "Name three things that are blue."
+  ];
+
+  $("brainArea").textContent =
+    prompts[Math.floor(Math.random()*prompts.length)];
+});
+
+/* GENTLE WATER REMINDER — ALL MODES */
+
+const WATER_INTERVAL = 60 * 60;
+const WATER_STORAGE = "demio_next_water_time";
+
+let nextWaterTime = Number(localStorage.getItem(WATER_STORAGE));
+
+if (!nextWaterTime || nextWaterTime < Date.now()) {
+  nextWaterTime = Date.now() + WATER_INTERVAL * 1000;
+  localStorage.setItem(WATER_STORAGE, nextWaterTime);
+}
+
+function updateWaterCountdown() {
+  let remaining = Math.max(0, Math.ceil(
+    (nextWaterTime - Date.now()) / 1000
+  ));
+
+  if (remaining <= 0) {
+    showWaterReminder();
+    nextWaterTime = Date.now() + WATER_INTERVAL * 1000;
+    localStorage.setItem(WATER_STORAGE, nextWaterTime);
+    remaining = WATER_INTERVAL;
+  }
+
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+
+  $("waterCountdown").textContent =
+    String(mins).padStart(2,"0") + ":" +
+    String(secs).padStart(2,"0");
+}
+
+function showWaterReminder() {
+  $("waterToast").classList.add("show");
+
+  if ("Notification" in window && Notification.permission === "granted") {
+    new Notification("DEMIO — A gentle reminder 💧", {
+      body: "You've been busy. Would you like a little water? Take care of yourself. ❤️"
+    });
+  }
+
+  if (currentMode === "talk") {
+    $("talkStatus").textContent =
+      "A gentle reminder: would you like a little water? 💧";
+  }
+}
+
+$("closeWater").addEventListener("click", () => {
+  $("waterToast").classList.remove("show");
+});
+
+$("waterTest").addEventListener("click", showWaterReminder);
+
+setInterval(updateWaterCountdown, 1000);
+updateWaterCountdown();
+
+if ("Notification" in window && Notification.permission === "default") {
+  document.addEventListener("click", function askNotification() {
+    Notification.requestPermission();
+    document.removeEventListener("click", askNotification);
+  }, {once:true});
+}
