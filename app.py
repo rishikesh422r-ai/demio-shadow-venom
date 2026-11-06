@@ -1,66 +1,162 @@
 import os
+import base64
+from io import BytesIO
+
 from flask import Flask, request, jsonify, send_from_directory
-from groq import Groq
-from dotenv import load_dotenv
+from openai import OpenAI
+from werkzeug.utils import secure_filename
 
-load_dotenv()
+app = Flask(__name__)
+app.config["MAX_CONTENT_LENGTH"] = 12 * 1024 * 1024
 
-app = Flask(__name__, static_folder=".")
+API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
 
-api_key = os.getenv("GROQ_API_KEY")
+client = OpenAI(api_key=API_KEY) if API_KEY else None
 
-client = Groq(api_key=api_key) if api_key else None
+SYSTEM_PROMPT = """
+You are ULTRON, also called DEMIO, an intelligent personal AI supervisor.
+You are helpful, friendly, intelligent and professional.
+You can teach, mentor, explain, brainstorm and help with coding.
+Understand and respond in Tamil and English.
+Follow the language used by the user.
+Explain things clearly and accurately.
+Analyze uploaded images and documents when provided.
+Never pretend to have performed an action you did not perform.
+"""
 
 @app.route("/")
 def home():
     return send_from_directory(".", "index.html")
 
-@app.route("/chat", methods=["POST"])
+
+@app.route("/api/health", methods=["GET"])
+def health():
+    return jsonify({
+        "status": "online",
+        "model": MODEL,
+        "ai_configured": client is not None
+    })
+
+
+def extract_document(file):
+    filename = secure_filename(file.filename)
+    extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+    if extension in ["txt", "md", "csv"]:
+        return file.read().decode("utf-8", errors="replace")
+
+    if extension == "pdf":
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(BytesIO(file.read()))
+            return "\n".join(
+                page.extract_text() or "" for page in reader.pages
+            )[:30000]
+        except Exception as error:
+            raise ValueError("Could not read PDF: " + str(error))
+
+    if extension == "docx":
+        try:
+            from docx import Document
+            document = Document(BytesIO(file.read()))
+            return "\n".join(p.text for p in document.paragraphs)[:30000]
+        except Exception as error:
+            raise ValueError("Could not read DOCX: " + str(error))
+
+    raise ValueError("Unsupported file. Upload an image, PDF, DOCX, TXT, MD or CSV.")
+
+
+@app.route("/api/chat", methods=["POST"])
 def chat():
-    if not client:
-        return jsonify({"error": "Groq API key is missing on server"}), 500
-
-    data = request.get_json(silent=True) or {}
-    message = data.get("message", "").strip()
-    history = data.get("history", [])
-
-    if not message:
-        return jsonify({"error": "Message is required"}), 400
-
-    messages = [{
-        "role": "system",
-        "content": (
-            "You are ULTRON, an advanced futuristic AI assistant. "
-            "Respond intelligently, confidently and concisely. "
-            "Call the user Creator."
-        )
-    }]
-
-    for item in history[-12:]:
-        if item.get("role") in ("user", "assistant"):
-            messages.append({
-                "role": item["role"],
-                "content": str(item.get("content", ""))[:4000]
-            })
-
-    messages.append({"role": "user", "content": message})
+    if client is None:
+        return jsonify({
+            "error": "OPENAI_API_KEY is missing. Add your API key in Render Environment Variables."
+        }), 503
 
     try:
-        response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
-            messages=messages,
-            temperature=0.7,
-            max_tokens=1024
-        )
+        message = request.form.get("message", "").strip()
+        language = request.form.get("language", "English")
+        uploaded = request.files.get("file")
 
-        return jsonify({
-            "reply": response.choices[0].message.content
+        if not message and not uploaded:
+            return jsonify({"error": "Please enter a message or attach a file."}), 400
+
+        content = []
+
+        if message:
+            content.append({
+                "type": "text",
+                "text": message
+            })
+
+        if uploaded and uploaded.filename:
+            filename = secure_filename(uploaded.filename)
+            extension = filename.rsplit(".", 1)[-1].lower() if "." in filename else ""
+
+            if extension in ["png", "jpg", "jpeg", "webp", "gif"]:
+                raw = uploaded.read()
+                mime = uploaded.mimetype or "image/jpeg"
+
+                if not mime.startswith("image/"):
+                    return jsonify({"error": "Invalid image type."}), 400
+
+                encoded = base64.b64encode(raw).decode("utf-8")
+                content.append({
+                    "type": "image_url",
+                    "image_url": {
+                        "url": f"data:{mime};base64,{encoded}"
+                    }
+                })
+
+            else:
+                document_text = extract_document(uploaded)
+                content.append({
+                    "type": "text",
+                    "text": (
+                        f"\nUploaded document: {filename}\n"
+                        f"Document content:\n{document_text}"
+                    )
+                })
+
+        content.append({
+            "type": "text",
+            "text": f"\nPreferred response language: {language}."
         })
 
-    except Exception:
-        app.logger.exception("Groq request failed")
-        return jsonify({"error": "AI core connection failed"}), 502
+        result = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": content}
+            ],
+            temperature=0.7,
+            max_tokens=1500
+        )
+
+        reply = result.choices[0].message.content or "I could not generate a response."
+
+        return jsonify({
+            "reply": reply,
+            "audio_text": True,
+            "model": MODEL
+        })
+
+    except ValueError as error:
+        return jsonify({"error": str(error)}), 400
+
+    except Exception as error:
+        app.logger.exception("AI request failed")
+        return jsonify({
+            "error": "AI request failed: " + str(error)
+        }), 500
+
+
+@app.errorhandler(413)
+def file_too_large(error):
+    return jsonify({"error": "File too large. Maximum upload size is 12 MB."}), 413
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5000)))
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
