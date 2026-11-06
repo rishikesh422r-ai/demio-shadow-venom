@@ -2,1045 +2,196 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#05070b">
-<title>DEMIO | ULTRON AI</title>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
-
-:root {
-  --red:#ff202d;
-  --glow:#ff3945;
-  --bg:#05070b;
-  --panel:#0b1019;
-  --line:rgba(255,50,60,.24);
-  --muted:#77818f;
-}
-
-*{box-sizing:border-box}
-
-body {
-  margin:0;
-  background:
-    radial-gradient(ellipse at 50% 25%,#281015 0%,#090b12 42%,#030407 100%);
-  color:#fff;
-  font-family:Inter,sans-serif;
-  min-height:100vh;
-  overflow:hidden;
-}
-
-button,input{font:inherit}
-button{cursor:pointer}
-
-.app {
-  height:100dvh;
-  display:flex;
-  flex-direction:column;
-  max-width:1600px;
-  margin:auto;
-}
-
-header {
-  height:65px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 22px;
-  border-bottom:1px solid var(--line);
-  background:rgba(5,7,11,.85);
-  z-index:5;
-}
-
-.logo {
-  font-family:Orbitron,sans-serif;
-  letter-spacing:4px;
-  font-size:19px;
-  font-weight:800;
-  color:white;
-  text-shadow:0 0 15px var(--red);
-}
-
-.logo span{color:var(--red)}
-
-.status {
-  color:#ff626a;
-  font-size:10px;
-  letter-spacing:2px;
-}
-
-.status:before {
-  content:"";
-  display:inline-block;
-  width:7px;height:7px;
-  border-radius:50%;
-  background:#ff2634;
-  margin-right:8px;
-  box-shadow:0 0 12px red;
-}
-
-.top-actions{display:flex;gap:9px}
-
-.small-btn {
-  background:#111720;
-  color:#ddd;
-  border:1px solid var(--line);
-  border-radius:8px;
-  padding:9px 12px;
-  font-size:11px;
-}
-
-.small-btn:hover{border-color:var(--red);color:white}
-
-main {
-  flex:1;
-  min-height:0;
-  display:grid;
-  grid-template-columns: minmax(0,1fr) minmax(330px,440px);
-  gap:15px;
-  padding:15px;
-}
-
-.left {
-  position:relative;
-  border:1px solid var(--line);
-  border-radius:15px;
-  background:linear-gradient(145deg,rgba(25,14,20,.8),rgba(4,8,14,.95));
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-}
-
-.grid-bg {
-  position:absolute;
-  inset:0;
-  background-image:
-    linear-gradient(rgba(255,30,40,.045) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(255,30,40,.045) 1px,transparent 1px);
-  background-size:38px 38px;
-  mask-image:radial-gradient(ellipse,black,transparent 75%);
-}
-
-.corner {
-  position:absolute;
-  width:35px;height:35px;
-  border-color:#ff3945;
-  border-style:solid;
-  opacity:.8;
-}
-.c1{top:15px;left:15px;border-width:1px 0 0 1px}
-.c2{top:15px;right:15px;border-width:1px 1px 0 0}
-.c3{bottom:15px;left:15px;border-width:0 0 1px 1px}
-.c4{bottom:15px;right:15px;border-width:0 1px 1px 0}
-
-.face-area {
-  position:relative;
-  width:min(390px,80vw);
-  height:410px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  perspective:900px;
-  z-index:1;
-}
-
-.face {
-  width:245px;
-  height:330px;
-  position:relative;
-  transform-style:preserve-3d;
-  animation:float 5s ease-in-out infinite;
-  filter:drop-shadow(0 0 20px rgba(255,25,35,.22));
-  transition:transform .5s;
-}
-
-@keyframes float {
-  0%,100%{transform:translateY(0) rotateY(-4deg)}
-  50%{transform:translateY(-12px) rotateY(4deg)}
-}
-
-.head {
-  position:absolute;
-  inset:10px 8px 0;
-  background:linear-gradient(125deg,#929ba4,#252d37 25%,#111720 48%,#69727d 70%,#151b24);
-  clip-path:polygon(17% 0,83% 0,100% 17%,94% 72%,76% 94%,50% 100%,24% 94%,6% 72%,0 17%);
-  border:1px solid #9ba5ae;
-  box-shadow:inset 0 0 30px #000;
-}
-
-.head:before {
-  content:"";
-  position:absolute;
-  inset:5px;
-  clip-path:inherit;
-  border:2px solid #7b8995;
-  background:linear-gradient(120deg,rgba(255,255,255,.18),transparent 40%);
-}
-
-.forehead {
-  position:absolute;
-  left:25%;top:9%;
-  width:50%;height:19%;
-  background:linear-gradient(180deg,#7c8791,#1c232d);
-  clip-path:polygon(15% 0,85% 0,100% 100%,0 100%);
-  border-bottom:2px solid #87939e;
-}
-
-.forehead:after {
-  content:"D";
-  position:absolute;
-  inset:10px;
-  font-family:Orbitron;
-  font-size:35px;
-  text-align:center;
-  color:#ff303b;
-  text-shadow:0 0 12px red;
-}
-
-.brow {
-  position:absolute;
-  top:34%;
-  width:43%;
-  height:15%;
-  background:linear-gradient(160deg,#aab2bb,#323b46 50%,#080c12);
-  clip-path:polygon(0 0,100% 25%,90% 65%,0 100%);
-}
-.brow.left{left:5%;transform:rotate(4deg)}
-.brow.right{right:5%;transform:scaleX(-1) rotate(4deg)}
-
-.eye {
-  position:absolute;
-  top:40%;
-  width:36%;
-  height:9%;
-  background:#ff202d;
-  clip-path:polygon(0 25%,100% 0,80% 100%,15% 80%);
-  box-shadow:0 0 15px red;
-  filter:drop-shadow(0 0 8px red);
-  animation:eyePulse 2s infinite alternate;
-}
-
-.eye.left{left:9%}
-.eye.right{right:9%;transform:scaleX(-1)}
-
-@keyframes eyePulse {
-  from{opacity:.7;filter:brightness(.8) drop-shadow(0 0 5px red)}
-  to{opacity:1;filter:brightness(1.6) drop-shadow(0 0 15px red)}
-}
-
-.nose {
-  position:absolute;
-  top:46%;
-  left:42%;
-  width:16%;height:21%;
-  background:linear-gradient(90deg,#151b23,#8a939d,#161c25);
-  clip-path:polygon(30% 0,70% 0,100% 85%,50% 100%,0 85%);
-}
-
-.cheek {
-  position:absolute;
-  top:53%;
-  width:27%;height:15%;
-  background:linear-gradient(135deg,#a0a9b1,#303945 60%,#0a0e14);
-  clip-path:polygon(0 0,100% 25%,80% 100%,15% 75%);
-}
-.cheek.left{left:3%}
-.cheek.right{right:3%;transform:scaleX(-1)}
-
-.mouth {
-  position:absolute;
-  top:73%;left:27%;
-  width:46%;height:9%;
-  border-top:3px solid #c0c8cf;
-  background:linear-gradient(180deg,#141921,#030508);
-  clip-path:polygon(0 0,100% 0,80% 100%,20% 100%);
-  transition:height .15s;
-}
-
-.mouth:after {
-  content:"";
-  position:absolute;
-  left:15%;right:15%;top:4px;
-  height:2px;
-  background:#ff2635;
-  box-shadow:0 0 8px red;
-}
-
-.chin {
-  position:absolute;
-  top:82%;left:25%;
-  width:50%;height:12%;
-  background:linear-gradient(180deg,#737d88,#151b23);
-  clip-path:polygon(0 0,100% 0,75% 100%,25% 100%);
-}
-
-.ear {
-  position:absolute;
-  top:33%;
-  width:22px;height:90px;
-  background:linear-gradient(90deg,#111720,#9aa3ad,#222a34);
-  border:1px solid #78838e;
-  border-radius:6px;
-}
-.ear.left{left:-5px}
-.ear.right{right:-5px}
-
-.talking .mouth {
-  height:16%;
-  animation:talkMouth .22s infinite alternate;
-}
-@keyframes talkMouth {
-  from{transform:scaleY(.5)}
-  to{transform:scaleY(1.3)}
-}
-
-.talking .face {
-  animation:float 1.5s ease-in-out infinite;
-}
-
-.ring {
-  position:absolute;
-  width:340px;height:340px;
-  border:1px solid rgba(255,35,45,.45);
-  border-radius:50%;
-  animation:rotate 12s linear infinite;
-}
-.ring:before,.ring:after {
-  content:"";
-  position:absolute;
-  inset:15px;
-  border:1px dashed rgba(255,50,60,.5);
-  border-radius:50%;
-}
-.ring:after{inset:-20px;border-style:solid;opacity:.35}
-
-@keyframes rotate{to{transform:rotate(360deg)}}
-
-.face-label {
-  position:absolute;
-  bottom:15px;
-  text-align:center;
-  font-family:Orbitron;
-  font-size:11px;
-  letter-spacing:5px;
-  color:#ff525b;
-  z-index:2;
-}
-
-.visual-status {
-  z-index:2;
-  font-size:10px;
-  color:#9aa4b2;
-  letter-spacing:2px;
-  margin-top:0;
-}
-
-.wave {
-  display:flex;
-  gap:4px;
-  align-items:center;
-  justify-content:center;
-  height:35px;
-  margin-top:15px;
-  z-index:2;
-}
-.wave i {
-  width:3px;height:7px;
-  background:#ff3440;
-  border-radius:5px;
-  box-shadow:0 0 7px red;
-}
-.talking .wave i{animation:wave .5s infinite alternate}
-.wave i:nth-child(2n){animation-delay:.2s}
-.wave i:nth-child(3n){animation-delay:.35s}
-@keyframes wave{to{height:27px}}
-
-.right {
-  min-height:0;
-  border:1px solid var(--line);
-  border-radius:15px;
-  background:rgba(8,12,19,.94);
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-.mode-tabs {
-  display:flex;
-  padding:12px;
-  gap:8px;
-  border-bottom:1px solid var(--line);
-}
-
-.mode {
-  flex:1;
-  padding:12px 5px;
-  background:#111722;
-  color:#9da6b3;
-  border:1px solid transparent;
-  border-radius:7px;
-  font-size:11px;
-  letter-spacing:1px;
-}
-
-.mode.active {
-  background:rgba(255,35,45,.13);
-  color:white;
-  border-color:var(--red);
-  box-shadow:0 0 12px rgba(255,30,40,.12);
-}
-
-.chat-heading {
-  padding:13px 15px;
-  font-family:Orbitron;
-  font-size:11px;
-  letter-spacing:2px;
-  border-bottom:1px solid rgba(255,255,255,.06);
-  color:#e6e9ed;
-}
-
-.messages {
-  flex:1;
-  overflow-y:auto;
-  padding:15px;
-  display:flex;
-  flex-direction:column;
-  gap:13px;
-}
-
-.message {
-  max-width:90%;
-  padding:12px;
-  border-radius:10px;
-  font-size:13px;
-  line-height:1.6;
-  overflow-wrap:anywhere;
-}
-
-.bot {
-  align-self:flex-start;
-  background:#151c27;
-  border:1px solid #252f3c;
-  color:#e7eaf0;
-}
-
-.user {
-  align-self:flex-end;
-  background:rgba(255,35,45,.14);
-  border:1px solid rgba(255,35,45,.3);
-  color:white;
-}
-
-.message small {
-  display:block;
-  font-size:9px;
-  color:#ff626a;
-  letter-spacing:1px;
-  margin-bottom:5px;
-}
-
-.message img {
-  max-width:100%;
-  max-height:180px;
-  border-radius:7px;
-  margin-top:8px;
-}
-
-.typing {
-  color:#ff5963;
-  font-size:11px;
-  padding:0 15px 8px;
-}
-
-.talking-panel {
-  display:none;
-  padding:20px;
-  text-align:center;
-  border-top:1px solid var(--line);
-}
-.talking-panel.show{display:block}
-
-.talk-btn {
-  width:75px;height:75px;
-  border-radius:50%;
-  border:1px solid #ff4a53;
-  background:radial-gradient(circle,#5e1118,#17080c);
-  color:white;
-  font-size:26px;
-  box-shadow:0 0 25px rgba(255,30,40,.35);
-}
-.talk-btn.active{animation:micPulse 1s infinite}
-@keyframes micPulse {
-  50%{box-shadow:0 0 35px #ff2635;transform:scale(1.06)}
-}
-
-.talk-caption {
-  color:#9ba6b5;
-  font-size:11px;
-  margin-top:12px;
-}
-
-.composer {
-  padding:12px;
-  border-top:1px solid var(--line);
-  background:#080d15;
-}
-
-.attachments {
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-  margin-bottom:8px;
-}
-.file-tag {
-  font-size:10px;
-  color:#ff777f;
-  background:#241117;
-  border:1px solid var(--line);
-  padding:5px 8px;
-  border-radius:5px;
-}
-
-.input-row {
-  display:flex;
-  align-items:center;
-  gap:7px;
-}
-
-.input-row input {
-  min-width:0;
-  flex:1;
-  padding:13px 12px;
-  background:#121a25;
-  border:1px solid #293340;
-  border-radius:8px;
-  color:white;
-  outline:none;
-  font-size:12px;
-}
-.input-row input:focus{border-color:var(--red)}
-
-.action {
-  width:40px;height:42px;
-  border:1px solid var(--line);
-  border-radius:8px;
-  color:white;
-  background:#171e29;
-  font-size:17px;
-}
-
-.action:hover{background:#371319;border-color:var(--red)}
-
-.send {
-  background:#c51f2c;
-  border-color:#ff3945;
-}
-
-.send:hover{background:#ff2635}
-
-.footer {
-  color:#586372;
-  font-size:9px;
-  letter-spacing:1px;
-  text-align:center;
-  padding:9px;
-}
-
-#fileInput{display:none}
-
-@media(max-width:800px) {
-  body{overflow:auto}
-  .app{height:100dvh;min-height:650px}
-  header{height:55px;padding:0 12px}
-  .logo{font-size:15px}
-  main{
-    display:flex;
-    flex-direction:column;
-    overflow-y:auto;
-    padding:9px;
-    gap:9px;
-  }
-  .left{flex:0 0 340px;min-height:340px}
-  .face-area{height:290px;transform:scale(.78)}
-  .ring{width:280px;height:280px}
-  .face-label{bottom:7px}
-  .right{flex:1;min-height:370px}
-  .top-actions .small-btn{padding:7px;font-size:9px}
-}
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#030814">
+<title>DEMIO | Personal AI</title>
+<link rel="stylesheet" href="/static/style.css">
 </head>
-
 <body>
 <div class="app">
 
 <header>
-  <div class="logo">DEMIO<span>.</span></div>
-  <div class="status">SYSTEM ONLINE</div>
-  <div class="top-actions">
-    <button class="small-btn" onclick="newConversation()">＋ NEW CHAT</button>
-  </div>
+  <div class="brand">DEMIO<span> AI</span></div>
+  <div class="system"><i></i> SYSTEM ONLINE</div>
+  <button id="newChat" class="outline">＋ NEW CHAT</button>
 </header>
+
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="side-title">OPERATING MODES</div>
+  <button class="nav active" data-mode="operating">◈ Operating</button>
+  <button class="nav" data-mode="chat">▤ Chatting</button>
+  <button class="nav" data-mode="talk">🎙 Speaking</button>
+  <button class="nav" data-mode="images">▧ Photos & Images</button>
+  <button class="nav" data-mode="mentor">✦ Mentoring</button>
+  <button class="nav" data-mode="games">♧ Games & Exercises</button>
+
+  <div class="water-card">
+    <div class="water-icon">💧</div>
+    <strong>Hydration Care</strong>
+    <p>A gentle reminder every 60 minutes.</p>
+    <div id="waterCountdown">60:00</div>
+    <button id="waterTest" class="outline small">Test reminder</button>
+  </div>
+
+  <div class="side-bottom">DEMIO CORE v1.0<br>ENGLISH ONLY</div>
+</aside>
 
 <main>
 
-<section class="left">
-  <div class="grid-bg"></div>
-  <div class="corner c1"></div>
-  <div class="corner c2"></div>
-  <div class="corner c3"></div>
-  <div class="corner c4"></div>
-
-  <div class="face-area" id="faceArea">
-    <div class="ring"></div>
-
-    <div class="face" id="face">
-      <div class="head"></div>
-      <div class="forehead"></div>
-      <div class="ear left"></div>
-      <div class="ear right"></div>
-      <div class="brow left"></div>
-      <div class="brow right"></div>
-      <div class="eye left"></div>
-      <div class="eye right"></div>
-      <div class="nose"></div>
-      <div class="cheek left"></div>
-      <div class="cheek right"></div>
-      <div class="mouth"></div>
-      <div class="chin"></div>
+<section id="operating" class="panel active-panel">
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <div class="avatar-frame">
+      <img src="/static/demio-boy.png" alt="DEMIO male AI avatar"
+           onerror="this.style.display='none';document.getElementById('avatarFallback').style.display='flex'">
+      <div id="avatarFallback" class="avatar-fallback">
+        <div class="robot-head">
+          <div class="robot-eyes"><i></i><i></i></div>
+          <div class="robot-mouth"></div>
+        </div>
+      </div>
     </div>
+    <div class="hero-title">DEMIO</div>
+    <div class="hero-sub">YOUR PERSONAL AI COMPANION</div>
+    <div class="equalizer" id="equalizer">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+    </div>
+    <div id="operatingStatus" class="hero-status">AWAITING COMMAND</div>
   </div>
 
-  <div class="face-label">ULTRON INTELLIGENCE</div>
-  <div class="visual-status" id="visualStatus">AWAITING COMMAND</div>
-
-  <div class="wave">
-    <i></i><i></i><i></i><i></i><i></i>
-    <i></i><i></i><i></i><i></i><i></i>
-    <i></i>
+  <div class="dashboard">
+    <div class="dash-card">
+      <span>CORE STATUS</span><strong>ONLINE</strong>
+    </div>
+    <div class="dash-card">
+      <span>LANGUAGE</span><strong>ENGLISH</strong>
+    </div>
+    <div class="dash-card">
+      <span>AI ENGINE</span><strong>GROQ</strong>
+    </div>
+    <div class="dash-card">
+      <span>WATER CARE</span><strong>60 MIN</strong>
+    </div>
+  </div>
+  <div class="welcome">
+    <h2>Hello! I'm DEMIO.</h2>
+    <p>Your AI companion is ready. Talk, learn, play, upload pictures or simply have a friendly conversation.</p>
+    <button class="primary" data-open="chat">START CONVERSATION →</button>
   </div>
 </section>
 
-<section class="right">
-
-  <div class="mode-tabs">
-    <button class="mode active" id="chatTab" onclick="setMode('chat')">
-      ◈ CHAT MODE
-    </button>
-    <button class="mode" id="talkTab" onclick="setMode('talk')">
-      ◉ TALKING MODE
-    </button>
+<section id="chat" class="panel">
+  <div class="section-head">
+    <div><h2>AI CONVERSATION</h2><p>Chat with DEMIO naturally.</p></div>
+    <button class="outline" id="clearChat">Clear chat</button>
   </div>
-
-  <div class="chat-heading" id="chatHeading">DEMIO / CONVERSATION</div>
-
-  <div class="messages" id="messages">
-    <div class="message bot">
-      <small>DEMIO AI</small>
-      Systems online. I am DEMIO, your personal AI assistant. You can type to me or switch to Talking Mode. How can I help you?
-    </div>
+  <div id="messages" class="messages">
+    <div class="bubble bot"><b>DEMIO</b><br>Hello! What would you like to talk about?</div>
   </div>
-
-  <div class="typing" id="typing" hidden>DEMIO is processing...</div>
-
-  <div class="talking-panel" id="talkingPanel">
-    <button class="talk-btn" id="talkButton" onclick="toggleListening()">🎙</button>
-    <div class="talk-caption" id="talkCaption">
-      Tap the microphone to start talking
-    </div>
-  </div>
-
+  <div id="typing" class="typing" hidden>DEMIO is thinking...</div>
   <div class="composer">
-    <div class="attachments" id="attachments"></div>
+    <label class="attach" for="fileInput">＋</label>
+    <input id="fileInput" type="file" multiple accept="image/*,.pdf,.txt,.docx,.csv">
+    <input id="messageInput" placeholder="Message DEMIO..." autocomplete="off">
+    <button id="voiceInput" class="icon-button" title="Voice input">🎤</button>
+    <button id="sendButton" class="send">➤</button>
+  </div>
+  <div id="fileList" class="file-list"></div>
+</section>
 
-    <div class="input-row">
-      <button class="action" title="Upload file" onclick="document.getElementById('fileInput').click()">＋</button>
-      <input type="file" id="fileInput" multiple accept="image/*,.pdf,.txt,.doc,.docx,.csv">
-      <input id="userInput" type="text" placeholder="Message DEMIO..." autocomplete="off">
-      <button class="action" title="Voice input" onclick="startVoiceInput()">🎤</button>
-      <button class="action send" title="Send" onclick="sendMessage()">➤</button>
+<section id="talk" class="panel">
+  <div class="section-head"><div><h2>TALKING MODE</h2><p>Speak naturally with your AI companion.</p></div></div>
+  <div class="talk-screen">
+    <div class="talk-orb">D</div>
+    <h2>DEMIO IS LISTENING</h2>
+    <p id="talkStatus">Tap the microphone to start talking.</p>
+    <button id="talkMic" class="mic-button">🎙</button>
+    <p class="hint">English voice recognition · Spoken replies</p>
+  </div>
+  <div id="talkMessages" class="talk-transcript"></div>
+</section>
+
+<section id="images" class="panel">
+  <div class="section-head"><div><h2>PHOTO & IMAGE INTELLIGENCE</h2><p>Upload an image and ask DEMIO to understand it.</p></div></div>
+  <div class="upload-zone">
+    <div class="upload-symbol">▧</div>
+    <h3>Upload your pictures</h3>
+    <p>Choose photos, screenshots or documents.</p>
+    <label for="imageInput" class="primary upload-label">CHOOSE FILES</label>
+    <input id="imageInput" type="file" multiple accept="image/*,.pdf,.txt,.docx">
+    <div id="imagePreviews" class="previews"></div>
+  </div>
+  <div class="image-question">
+    <input id="imageQuestion" placeholder="What should DEMIO examine in these images?">
+    <button id="analyzeImages" class="primary">ANALYZE →</button>
+  </div>
+  <div id="imageResult" class="result"></div>
+</section>
+
+<section id="mentor" class="panel">
+  <div class="section-head"><div><h2>PERSONAL MENTOR</h2><p>Learn, improve and reach your goals.</p></div></div>
+  <div class="mentor-grid">
+    <button class="feature-card" data-prompt="Teach me an interesting new topic in simple steps. Ask me questions as we learn.">
+      <span>📚</span><b>Learn something</b><small>Understand new topics</small>
+    </button>
+    <button class="feature-card" data-prompt="Help me create a practical daily study plan. Ask what I need to learn first.">
+      <span>🎯</span><b>Study planning</b><small>Build good habits</small>
+    </button>
+    <button class="feature-card" data-prompt="Give me a friendly English speaking practice session. Correct my mistakes gently.">
+      <span>💬</span><b>English practice</b><small>Speak with confidence</small>
+    </button>
+    <button class="feature-card" data-prompt="Act as my friendly personal mentor. Ask about my goals and help me make progress.">
+      <span>🌟</span><b>Personal growth</b><small>Positive encouragement</small>
+    </button>
+  </div>
+  <div class="mentor-chat">
+    <input id="mentorInput" placeholder="Ask your mentor anything...">
+    <button id="mentorSend" class="primary">ASK DEMIO →</button>
+  </div>
+  <div id="mentorResult" class="result"></div>
+</section>
+
+<section id="games" class="panel">
+  <div class="section-head"><div><h2>GAMES & EXERCISES</h2><p>Train your brain with friendly challenges.</p></div></div>
+  <div class="game-grid">
+    <div class="game-card">
+      <span>🧠</span><h3>Memory Challenge</h3>
+      <p>Remember the numbers in the correct order.</p>
+      <button id="memoryStart" class="primary">START GAME</button>
+      <div id="memoryArea" class="game-result"></div>
+    </div>
+    <div class="game-card">
+      <span>⚡</span><h3>Quick Quiz</h3>
+      <p>Test your knowledge with a short quiz.</p>
+      <button id="quizStart" class="primary">START QUIZ</button>
+      <div id="quizArea" class="game-result"></div>
+    </div>
+    <div class="game-card">
+      <span>🏃</span><h3>Movement Break</h3>
+      <p>A gentle reminder to stretch and move.</p>
+      <button id="exerciseStart" class="primary">START EXERCISE</button>
+      <div id="exerciseArea" class="game-result"></div>
+    </div>
+    <div class="game-card">
+      <span>✍️</span><h3>Brain Exercise</h3>
+      <p>Practice reasoning and problem-solving.</p>
+      <button id="brainStart" class="primary">GET CHALLENGE</button>
+      <div id="brainArea" class="game-result"></div>
     </div>
   </div>
-
-  <div class="footer">DEMIO AI CORE · ENGLISH INTERFACE · ALL SYSTEMS READY</div>
-
 </section>
+
 </main>
 </div>
 
-<script>
-/* =====================================
-   DEMIO CONFIGURATION
-   Change these routes if your backend
-   uses different API endpoints.
-===================================== */
-
-const CONFIG = {
-  chatEndpoint: "/api/chat",
-  uploadEndpoint: "/api/upload",
-  speechLanguage: "en-US",
-  voiceReplies: true
-};
-
-let currentMode = "chat";
-let selectedFiles = [];
-let recognition = null;
-let isListening = false;
-let conversationId = createId();
-
-function createId() {
-  return "demio-" + Date.now() + "-" +
-    Math.random().toString(36).slice(2,8);
-}
-
-const messages = document.getElementById("messages");
-const input = document.getElementById("userInput");
-const typing = document.getElementById("typing");
-const faceArea = document.getElementById("faceArea");
-const visualStatus = document.getElementById("visualStatus");
-
-function setStatus(text) {
-  visualStatus.textContent = text.toUpperCase();
-}
-
-function setMode(mode) {
-  currentMode = mode;
-
-  document.getElementById("chatTab").classList.toggle("active",mode==="chat");
-  document.getElementById("talkTab").classList.toggle("active",mode==="talk");
-
-  document.getElementById("talkingPanel").classList.toggle("show",mode==="talk");
-
-  document.getElementById("chatHeading").textContent =
-    mode==="talk" ? "DEMIO / VOICE COMMUNICATION" : "DEMIO / CONVERSATION";
-
-  input.placeholder = mode==="talk"
-    ? "Type a message or use the microphone..."
-    : "Message DEMIO...";
-
-  if(mode==="talk") {
-    setStatus("Voice communication ready");
-  } else {
-    stopListening();
-    setStatus("Awaiting command");
-  }
-}
-
-function addMessage(text, type="bot", files=[]) {
-  const div = document.createElement("div");
-  div.className = "message " + type;
-
-  const label = document.createElement("small");
-  label.textContent = type==="bot" ? "DEMIO AI" : "YOU";
-  div.appendChild(label);
-
-  const content = document.createElement("div");
-  content.textContent = text;
-  div.appendChild(content);
-
-  files.forEach(file => {
-    if(file.type && file.type.startsWith("image/")) {
-      const image = document.createElement("img");
-      image.src = URL.createObjectURL(file);
-      div.appendChild(image);
-    } else {
-      const filename = document.createElement("div");
-      filename.textContent = "📎 " + file.name;
-      div.appendChild(filename);
-    }
-  });
-
-  messages.appendChild(div);
-  messages.scrollTop = messages.scrollHeight;
-}
-
-function showError(text) {
-  addMessage(text,"bot");
-}
-
-function newConversation() {
-  stopListening();
-  speechSynthesis.cancel();
-
-  conversationId = createId();
-  selectedFiles = [];
-  document.getElementById("attachments").innerHTML = "";
-  messages.innerHTML = "";
-
-  addMessage("A new conversation has started. I am ready for your next command.","bot");
-  setStatus("New conversation ready");
-}
-
-document.getElementById("fileInput").addEventListener("change",function(e) {
-  const files = Array.from(e.target.files || []);
-  selectedFiles.push(...files);
-
-  const area = document.getElementById("attachments");
-  area.innerHTML = "";
-
-  selectedFiles.forEach((file,index) => {
-    const tag = document.createElement("span");
-    tag.className = "file-tag";
-    tag.textContent = "📎 " + file.name + " ×";
-
-    tag.style.cursor = "pointer";
-    tag.title = "Remove file";
-
-    tag.onclick = () => {
-      selectedFiles.splice(index,1);
-      renderAttachments();
-    };
-
-    area.appendChild(tag);
-  });
-
-  e.target.value = "";
-});
-
-function renderAttachments() {
-  const area = document.getElementById("attachments");
-  area.innerHTML = "";
-
-  selectedFiles.forEach((file,index) => {
-    const tag = document.createElement("span");
-    tag.className = "file-tag";
-    tag.textContent = "📎 " + file.name + " ×";
-    tag.onclick = () => {
-      selectedFiles.splice(index,1);
-      renderAttachments();
-    };
-    area.appendChild(tag);
-  });
-}
-
-async function sendMessage() {
-  const text = input.value.trim();
-
-  if(!text && selectedFiles.length===0) return;
-
-  const files = [...selectedFiles];
-
-  addMessage(text || "Please review my uploaded files.", "user",files);
-
-  input.value = "";
-  selectedFiles = [];
-  renderAttachments();
-
-  typing.hidden = false;
-  setStatus("Processing request");
-  faceArea.classList.add("talking");
-
-  try {
-    let response;
-
-    if(files.length) {
-      const form = new FormData();
-      form.append("message",text);
-      form.append("conversation_id",conversationId);
-
-      files.forEach(file => form.append("files",file));
-
-      response = await fetch(CONFIG.uploadEndpoint,{
-        method:"POST",
-        body:form
-      });
-
-    } else {
-      response = await fetch(CONFIG.chatEndpoint,{
-        method:"POST",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({
-          message:text,
-          conversation_id:conversationId
-        })
-      });
-    }
-
-    if(!response.ok) {
-      throw new Error("Server returned HTTP " + response.status);
-    }
-
-    const data = await response.json();
-
-    const reply =
-      data.reply ||
-      data.response ||
-      data.message ||
-      data.answer ||
-      "The server returned a response, but no reply text was found.";
-
-    addMessage(reply,"bot");
-
-    if(CONFIG.voiceReplies && currentMode==="talk") {
-      speak(reply);
-    }
-
-    setStatus("Response delivered");
-
-  } catch(error) {
-    console.error("DEMIO API error:",error);
-
-    showError(
-      "Connection error: " + error.message +
-      ". Check your backend API routes and server connection."
-    );
-
-    setStatus("Connection error");
-
-  } finally {
-    typing.hidden = true;
-    faceArea.classList.remove("talking");
-  }
-}
-
-input.addEventListener("keydown",e => {
-  if(e.key==="Enter") sendMessage();
-});
-
-/* VOICE INPUT */
-
-function createRecognition() {
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  if(!SpeechRecognition) return null;
-
-  const r = new SpeechRecognition();
-  r.lang = CONFIG.speechLanguage;
-  r.continuous = false;
-  r.interimResults = true;
-
-  r.onstart = () => {
-    isListening = true;
-    document.getElementById("talkButton").classList.add("active");
-    document.getElementById("talkCaption").textContent = "Listening... Speak now";
-    faceArea.classList.add("talking");
-    setStatus("Listening to your voice");
-  };
-
-  r.onresult = event => {
-    let finalText = "";
-
-    for(let i=event.resultIndex;i<event.results.length;i++) {
-      finalText += event.results[i][0].transcript;
-    }
-
-    input.value = finalText;
-  };
-
-  r.onerror = event => {
-    console.error("Speech recognition:",event.error);
-    document.getElementById("talkCaption").textContent =
-      "Microphone error: " + event.error;
-  };
-
-  r.onend = () => {
-    isListening = false;
-    document.getElementById("talkButton").classList.remove("active");
-    faceArea.classList.remove("talking");
-    document.getElementById("talkCaption").textContent =
-      "Tap the microphone to speak again";
-    setStatus("Awaiting command");
-
-    if(currentMode==="talk" && input.value.trim()) {
-      sendMessage();
-    }
-  };
-
-  return r;
-}
-
-function toggleListening() {
-  if(isListening) {
-    stopListening();
-    return;
-  }
-
-  recognition = createRecognition();
-
-  if(!recognition) {
-    document.getElementById("talkCaption").textContent =
-      "Speech recognition is not supported. Try Chrome.";
-    return;
-  }
-
-  try {
-    recognition.start();
-  } catch(error) {
-    console.error(error);
-  }
-}
-
-function startVoiceInput() {
-  recognition = createRecognition();
-
-  if(!recognition) {
-    alert("Voice input is not supported in this browser. Try Chrome.");
-    return;
-  }
-
-  try {
-    recognition.start();
-  } catch(error) {
-    console.error(error);
-  }
-}
-
-function stopListening() {
-  if(recognition && isListening) {
-    recognition.stop();
-  }
-}
-
-/* VOICE OUTPUT */
-
-function speak(text) {
-  if(!("speechSynthesis" in window)) return;
-
-  speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = CONFIG.speechLanguage;
-  utterance.rate = 1;
-  utterance.pitch = 0.85;
-  utterance.volume = 1;
-
-  utterance.onstart = () => {
-    faceArea.classList.add("talking");
-    setStatus("DEMIO speaking");
-  };
-
-  utterance.onend = () => {
-    faceArea.classList.remove("talking");
-    setStatus("Voice communication ready");
-  };
-
-  speechSynthesis.speak(utterance);
-}
-
-/* FACE MOVEMENT */
-
-document.addEventListener("mousemove",e => {
-  if(window.innerWidth < 800) return;
-
-  const x = (e.clientX/window.innerWidth-.5)*12;
-  const y = (e.clientY/window.innerHeight-.5)*-10;
-
-  const face = document.getElementById("face");
-  face.style.marginLeft = x + "px";
-  face.style.marginTop = y + "px";
-});
-
-/* INITIALIZATION */
-
-if(!("webkitSpeechRecognition" in window) &&
-   !("SpeechRecognition" in window)) {
-  console.log("Use Chrome for voice recognition.");
-}
-
-setStatus("System online");
-</script>
+<div id="waterToast" class="water-toast" role="status">
+  <span>💧</span>
+  <div><b>A gentle reminder</b><p>You've been busy. Would you like a little water? Take care of yourself. ❤️</p></div>
+  <button id="closeWater">×</button>
+</div>
+
+<script src="/app.js"></script>
 </body>
 </html>
