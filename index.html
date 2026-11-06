@@ -2,212 +2,181 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#08090d">
-<title>DEMIO — ULTRON AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ULTRON 2099 | DEMIO AI</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#08090d;color:#eee;font-family:Arial,sans-serif}
-:root{--red:#ff2447;--line:#34202a;--muted:#999}
-button,input,textarea{font:inherit}
-button{cursor:pointer}
-.app{height:100dvh;display:grid;grid-template-columns:245px 1fr;overflow:hidden}
-.sidebar{background:#0c0d13;border-right:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:14px}
-.brand{font-size:25px;font-weight:900;letter-spacing:4px;color:var(--red);text-shadow:0 0 15px #a80032}
-.sub{font-size:10px;letter-spacing:3px;color:#aaa}
-.new{padding:13px;background:#200d16;border:1px solid #a51b3b;color:#fff;border-radius:9px}
-.section{font-size:10px;letter-spacing:3px;color:#777;margin-top:12px}
-.mode{background:transparent;border:1px solid transparent;color:#bbb;text-align:left;padding:12px;border-radius:8px}
-.mode.active,.mode:hover{background:#211019;border-color:#722039;color:#fff}
-.mode span{color:var(--red);margin-right:9px}
-.sidebottom{margin-top:auto;color:#777;font-size:11px;line-height:2}
-.main{min-width:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 0%,#25101a 0%,#0b0c12 43%,#08090d 80%)}
-.top{height:65px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px}
-.top strong{letter-spacing:2px;font-size:12px}
-.online{font-size:10px;color:#ff7185;letter-spacing:2px}
-.content{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center}
-.hero{text-align:center;padding:25px 10px 12px}
-.orb{width:115px;height:115px;border-radius:50%;margin:auto auto 13px;border:1px solid #a92743;box-shadow:0 0 35px #7c102d,inset 0 0 30px #74152b;background:radial-gradient(circle at 35% 25%,#9c3448,#32101c 45%,#090a10 75%);position:relative;animation:pulse 3s infinite}
-.orb:before{content:"";position:absolute;left:23px;right:23px;top:42px;height:9px;background:#ff183f;filter:blur(5px);box-shadow:0 0 16px 7px #ff183f;border-radius:50%}
-.orb:after{content:"";position:absolute;left:35px;right:35px;top:43px;height:4px;background:#fff;box-shadow:0 0 12px #ff2348}
-@keyframes pulse{50%{box-shadow:0 0 55px #b5163e,inset 0 0 35px #8c1738}}
-.hero h1{font-size:17px;letter-spacing:4px;margin:0 0 7px}
-.hero p{font-size:10px;color:#aaa;letter-spacing:2px}
-.chat{width:min(850px,100%);padding:10px 20px;flex:1;overflow-y:auto}
-.msg{display:flex;margin:13px 0;gap:10px;align-items:flex-start}
-.avatar{flex:0 0 30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#32101d;color:#ff5573;font-size:11px}
-.bubble{max-width:85%;padding:13px 15px;background:#14151d;border:1px solid #30212a;border-radius:4px 13px 13px 13px;line-height:1.55;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
-.msg.user{justify-content:flex-end}
-.msg.user .bubble{background:#29101a;border-color:#79233c;border-radius:13px 4px 13px 13px}
-.msg.user .avatar{order:2;background:#501326;color:white}
-.composer{width:min(850px,100%);padding:12px 18px 20px}
-.uploads{display:flex;gap:7px;flex-wrap:wrap}
-.filetag{font-size:11px;color:#ff9aaa;border:1px solid #713044;border-radius:20px;padding:6px 10px}
-.inputbox{border:1px solid #673044;background:#11121a;border-radius:14px;padding:10px;display:flex;align-items:flex-end;gap:8px}
-.inputbox textarea{flex:1;resize:none;background:transparent;color:white;border:0;outline:0;min-height:42px;max-height:120px;padding:10px}
-.iconbtn{width:40px;height:40px;border-radius:10px;background:#21121a;border:1px solid #673044;color:#ff718a}
-.send{background:#d91e42;color:white;border:0}
-.hint{text-align:center;color:#777;font-size:10px;margin-top:9px}
+body{margin:0;background:#05070d;color:#f4f5ff;font-family:Arial,sans-serif;overflow:hidden}
+.app{display:flex;height:100vh}
+.sidebar{width:235px;background:#090d18;border-right:1px solid #492039;padding:24px 15px}
+.logo{font-size:23px;font-weight:900;letter-spacing:4px;color:#ff315e}
+.sub{font-size:10px;color:#9296aa;letter-spacing:3px;margin-top:8px}
+.nav{margin-top:45px}
+.nav button{width:100%;padding:15px;margin:7px 0;text-align:left;background:#111626;color:#ddd;border:1px solid #292d42;border-radius:9px;cursor:pointer}
+.nav button:hover{border-color:#ff315e;color:#ff6482}
+.status{margin-top:40px;font-size:11px;color:#9296aa}
+.dot{display:inline-block;width:8px;height:8px;background:#26edaa;border-radius:50%;margin-right:7px;box-shadow:0 0 12px #26edaa}
+.main{flex:1;display:flex;flex-direction:column;min-width:0}
+.top{height:65px;border-bottom:1px solid #302033;padding:23px 27px;display:flex;justify-content:space-between;font-size:12px;letter-spacing:2px}
+.online{color:#ff4268}
+.workspace{flex:1;overflow-y:auto;padding:25px;display:flex;flex-direction:column;align-items:center}
+.core{width:112px;height:112px;border:1px solid #ff315e;border-radius:50%;display:grid;place-items:center;margin:8px auto 18px;box-shadow:0 0 25px #ff164c, inset 0 0 20px #ff164c44;animation:pulse 2.5s infinite}
+.core span{width:43px;height:8px;background:#ff315e;box-shadow:0 0 18px #ff315e;border-radius:5px}
+@keyframes pulse{50%{box-shadow:0 0 50px #ff164c,inset 0 0 30px #ff164c77;transform:scale(1.05)}}
+.heading{text-align:center;font-size:23px;letter-spacing:4px;font-weight:bold}
+.tagline{text-align:center;font-size:10px;letter-spacing:3px;color:#a1a5b9;margin-top:10px}
+.chat{width:100%;max-width:900px;margin:35px auto 20px;display:flex;flex-direction:column;gap:17px}
+.msg{padding:15px 18px;border:1px solid #42304d;border-radius:13px;background:#151b2c;line-height:1.55;max-width:85%;white-space:pre-wrap;overflow-wrap:anywhere}
+.ai{align-self:flex-start;border-left:3px solid #ff315e}
+.user{align-self:flex-end;border-right:3px solid #ff315e;background:#21182a}
+.composer{width:100%;max-width:950px;margin:auto auto 12px;padding:12px;background:#111627;border:1px solid #a73561;border-radius:17px;display:flex;gap:9px;align-items:center}
+.composer input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:white;font-size:15px;padding:12px}
+.btn{background:#282039;border:1px solid #74304d;color:#ff6687;border-radius:10px;padding:12px;cursor:pointer;font-size:17px}
+.send{background:#ff315e;color:white;border:0;font-weight:bold}
+.btn:hover{filter:brightness(1.3)}
 #file{display:none}
+.hint{font-size:10px;color:#8e91a4;text-align:center;margin:0 0 8px}
+#preview{color:#ff8aa3;font-size:11px;max-width:950px;margin:0 auto 5px}
 @media(max-width:650px){
-.app{grid-template-columns:65px 1fr}
-.sidebar{padding:12px 6px;align-items:center}
-.brand{font-size:11px;letter-spacing:1px}
-.sub,.section,.mode .label,.sidebottom,.new .label{display:none}
-.new{width:45px;height:43px;padding:5px}
-.mode{width:48px;height:45px;text-align:center;padding:8px;font-size:18px}
-.mode span{margin:0}
-.top{padding:0 12px}
-.hero{padding-top:17px}
-.orb{width:85px;height:85px}
-.orb:before{top:31px}
-.orb:after{top:32px}
-.chat{padding:5px 10px}
-.composer{padding:8px}
-.bubble{font-size:13px}
+.sidebar{width:65px;padding:15px 7px}
+.logo{font-size:12px;letter-spacing:0}
+.sub,.nav button span,.status{display:none}
+.nav{margin-top:35px}
+.nav button{font-size:17px;text-align:center;padding:12px 3px}
+.top{padding:20px 12px;font-size:10px}
+.workspace{padding:15px}
+.heading{font-size:18px}
+.composer{gap:5px;padding:7px}
+.btn{padding:10px}
+.msg{max-width:95%;font-size:13px}
 }
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="sidebar">
- <div class="brand">DEMIO</div>
- <div class="sub">ULTRON INTELLIGENCE</div>
- <button class="new" onclick="newChat()">＋ <span class="label">NEW CHAT</span></button>
- <div class="section">AI MODULES</div>
- <button class="mode active" data-mode="supervisor" onclick="setMode(this)"><span>◈</span><span class="label">Supervisor</span></button>
- <button class="mode" data-mode="tamil" onclick="setMode(this)"><span>அ</span><span class="label">Tamil AI</span></button>
- <button class="mode" data-mode="mentor" onclick="setMode(this)"><span>✦</span><span class="label">Exercise Mentor</span></button>
- <button class="mode" data-mode="game" onclick="setMode(this)"><span>⚡</span><span class="label">Game & Quiz</span></button>
- <button class="mode" data-mode="friendly" onclick="setMode(this)"><span>♡</span><span class="label">Friendly Talk</span></button>
- <div class="sidebottom">DEMIO AI CORE<br>ALL SYSTEMS READY<br>VERSION 2.0</div>
+  <div class="logo">ULTRON</div>
+  <div class="sub">2099 AI CORE</div>
+  <div class="nav">
+    <button onclick="newChat()">◈ <span>New conversation</span></button>
+    <button onclick="document.getElementById('file').click()">＋ <span>Upload files</span></button>
+    <button onclick="startVoice()">🎙 <span>Voice mode</span></button>
+    <button onclick="setLanguage('Tamil')">அ <span>Tamil mode</span></button>
+    <button onclick="setLanguage('English')">A <span>English mode</span></button>
+  </div>
+  <div class="status"><span class="dot"></span> SYSTEM READY<br><br>SUPERVISOR MODE</div>
 </aside>
+
 <main class="main">
- <header class="top">
-  <strong id="modeTitle">SUPERVISOR MODE</strong>
-  <span class="online">● AI INTERFACE</span>
- </header>
- <div class="content">
-  <div class="hero">
-   <div class="orb"></div>
-   <h1>HOW CAN I HELP YOU?</h1>
-   <p>ONE INTELLIGENCE. MANY CAPABILITIES.</p>
-  </div>
-  <div class="chat" id="chat">
-   <div class="msg">
-    <div class="avatar">AI</div>
-    <div class="bubble">Hello! I am DEMIO. உங்கள் AI நண்பன்! I can help with Tamil conversations, exercise mentoring, games, learning and everyday tasks. Choose a mode and let's begin.</div>
-   </div>
-  </div>
+  <header class="top">
+    <span>SUPERVISOR MODE</span>
+    <span class="online">● AI INTERFACE</span>
+  </header>
+
+  <section class="workspace" id="workspace">
+    <div class="core"><span></span></div>
+    <div class="heading">HOW CAN I HELP YOU?</div>
+    <div class="tagline">ONE INTELLIGENCE. MANY CAPABILITIES.</div>
+    <div class="chat" id="chat">
+      <div class="msg ai">ULTRON online. வணக்கம்! How can I help you?</div>
+    </div>
+  </section>
+
+  <div id="preview"></div>
   <div class="composer">
-   <div class="uploads" id="uploads"></div>
-   <div class="inputbox">
-    <button class="iconbtn" onclick="document.getElementById('file').click()" title="Attach files">＋</button>
-    <input type="file" id="file" multiple accept="*/*">
-    <textarea id="message" placeholder="Message DEMIO..." rows="1"></textarea>
-    <button class="iconbtn send" onclick="sendMessage()">➤</button>
-   </div>
-   <div class="hint">Attach files · Tamil & English · Enter to send</div>
+    <button class="btn" onclick="document.getElementById('file').click()" title="Attach file">＋</button>
+    <input id="message" placeholder="Message ULTRON..." autocomplete="off">
+    <input type="file" id="file" accept="image/*,.txt,.md,.csv,.pdf,.docx" onchange="showFile(this)">
+    <button class="btn" onclick="startVoice()" title="Speak">🎙</button>
+    <button class="btn send" onclick="sendMessage()">➤</button>
   </div>
- </div>
+  <div class="hint">Attach images & documents · Tamil & English · Enter to send</div>
 </main>
 </div>
+
 <script>
-let mode="supervisor";
-let selectedFiles=[];
+let selectedFile=null;
+let language="English";
+const chat=document.getElementById("chat");
+const input=document.getElementById("message");
 
-const titles={
- supervisor:"SUPERVISOR MODE",
- tamil:"TAMIL AI MODE",
- mentor:"EXERCISE MENTOR",
- game:"GAME & QUIZ MODE",
- friendly:"FRIENDLY TALK"
-};
-
-function setMode(button){
- document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
- button.classList.add("active");
- mode=button.dataset.mode;
- document.getElementById("modeTitle").textContent=titles[mode];
+function addMessage(text,type){
+  const div=document.createElement("div");
+  div.className="msg "+type;
+  div.textContent=text;
+  chat.appendChild(div);
+  document.getElementById("workspace").scrollTop=
+    document.getElementById("workspace").scrollHeight;
+  return div;
 }
-
 function newChat(){
- document.getElementById("chat").innerHTML="";
- selectedFiles=[];
- renderFiles();
- addMessage("AI","New conversation started. வணக்கம்! How can I help you?");
+  chat.innerHTML="";
+  selectedFile=null;
+  document.getElementById("file").value="";
+  document.getElementById("preview").textContent="";
+  addMessage("New conversation started. வணக்கம்!","ai");
 }
-
-function addMessage(who,text){
- const row=document.createElement("div");
- row.className="msg "+(who==="YOU"?"user":"");
- const avatar=document.createElement("div");
- avatar.className="avatar";
- avatar.textContent=who==="YOU"?"YOU":"AI";
- const bubble=document.createElement("div");
- bubble.className="bubble";
- bubble.textContent=text;
- row.append(avatar,bubble);
- document.getElementById("chat").appendChild(row);
- document.getElementById("chat").scrollTop=999999;
- return bubble;
+function setLanguage(lang){
+  language=lang;
+  addMessage("Language changed to "+lang+".","ai");
 }
-
-document.getElementById("file").addEventListener("change",e=>{
- selectedFiles.push(...Array.from(e.target.files));
- renderFiles();
- e.target.value="";
-});
-
-function renderFiles(){
- const area=document.getElementById("uploads");
- area.innerHTML="";
- selectedFiles.forEach((f,i)=>{
- const tag=document.createElement("span");
- tag.className="filetag";
- tag.textContent="📎 "+f.name+" ×";
- tag.onclick=()=>{selectedFiles.splice(i,1);renderFiles()};
- area.appendChild(tag);
- });
+function showFile(el){
+  selectedFile=el.files[0]||null;
+  document.getElementById("preview").textContent=
+    selectedFile?"Attached: "+selectedFile.name:"";
 }
-
 async function sendMessage(){
- const input=document.getElementById("message");
- const message=input.value.trim();
- if(!message&&!selectedFiles.length)return;
-
- addMessage("YOU",message||"Please examine my attached files.");
- input.value="";
- const files=[...selectedFiles];
- selectedFiles=[];
- renderFiles();
-
- const reply=addMessage("AI","Connecting to DEMIO AI...");
- try{
+  const message=input.value.trim();
+  if(!message&&!selectedFile)return;
+  addMessage(message+(selectedFile?"\n📎 "+selectedFile.name:""),"user");
+  input.value="";
+  const file=selectedFile;
+  selectedFile=null;
+  document.getElementById("file").value="";
+  document.getElementById("preview").textContent="";
+  const loading=addMessage("ULTRON is processing your request...","ai");
   const data=new FormData();
   data.append("message",message);
-  data.append("mode",mode);
-  data.append("language",mode==="tamil"?"Tamil":"Auto");
-  files.forEach(f=>data.append("files",f));
-
-  const response=await fetch("/api/chat",{
-   method:"POST",
-   body:data
-  });
-
-  if(!response.ok)throw new Error("Server error "+response.status);
-  const result=await response.json();
-  reply.textContent=result.reply||result.response||"No response received.";
- }catch(error){
-  reply.textContent="AI connection failed. Please check that your app.py has a working POST /api/chat endpoint and that the AI service is configured. Error: "+error.message;
- }
+  data.append("language",language);
+  if(file)data.append("file",file);
+  try{
+    const response=await fetch("/api/chat",{method:"POST",body:data});
+    const result=await response.json();
+    if(!response.ok)throw new Error(result.error||"Server error "+response.status);
+    loading.textContent=result.reply;
+    if(result.audio_text && "speechSynthesis" in window){
+      speak(result.reply);
+    }
+  }catch(error){
+    loading.textContent="Connection error: "+error.message+
+      "\nCheck your app.py, API key and server logs.";
+  }
 }
-
-document.getElementById("message").addEventListener("keydown",e=>{
- if(e.key==="Enter"&&!e.shiftKey){
-  e.preventDefault();
-  sendMessage();
- }
+function startVoice(){
+  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SpeechRecognition){
+    addMessage("Voice recognition is not supported in this browser. Try Chrome.","ai");
+    return;
+  }
+  const recognition=new SpeechRecognition();
+  recognition.lang=language==="Tamil"?"ta-IN":"en-IN";
+  recognition.interimResults=false;
+  recognition.onresult=(event)=>{
+    input.value=event.results[0][0].transcript;
+    sendMessage();
+  };
+  recognition.onerror=()=>addMessage("Voice recognition failed. Please try again.","ai");
+  recognition.start();
+}
+function speak(text){
+  if(!("speechSynthesis" in window))return;
+  speechSynthesis.cancel();
+  const utterance=new SpeechSynthesisUtterance(text);
+  utterance.lang=language==="Tamil"?"ta-IN":"en-IN";
+  speechSynthesis.speak(utterance);
+}
+input.addEventListener("keydown",e=>{
+  if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendMessage();}
 });
 </script>
 </body>
