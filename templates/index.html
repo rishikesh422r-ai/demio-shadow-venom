@@ -1,82 +1,434 @@
-async function send(text) {
-    text = (text || "").trim();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DEMIO | Neural Interface</title>
 
-    if (!text && !media) return;
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-    const m = media;
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-    add("user", text, m);
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050812;
+      color: #e8faff;
+      font-family: Inter, sans-serif;
+      overflow: hidden;
+    }
 
-    $("txt").value = "";
-    $("clr").onclick();
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 1100px;
+      margin: auto;
+      padding: 18px;
+    }
 
-    thinking = true;
-    setStatus("PROCESSING");
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 4px 20px;
+      border-bottom: 1px solid #12334a;
+    }
 
-    history.push({
-        role: "user",
-        content: text
-    });
+    .logo {
+      font-family: Orbitron, sans-serif;
+      font-size: 25px;
+      letter-spacing: 5px;
+      color: #48eaff;
+      text-shadow: 0 0 15px #00cfff;
+    }
 
-    try {
-        let data;
+    .status {
+      color: #58f5b5;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: 20px;
+    }
+
+    .core {
+      text-align: center;
+      padding: 12px;
+    }
+
+    .orb {
+      width: 125px;
+      height: 125px;
+      margin: auto;
+      border-radius: 50%;
+      border: 2px solid #28dfff;
+      box-shadow: 0 0 25px #008cff, inset 0 0 25px #007ca8;
+      background: radial-gradient(circle, #164b70, #071629 65%, #020711);
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px #008cff, inset 0 0 20px #007ca8;
+      }
+      50% {
+        transform: scale(1.06);
+        box-shadow: 0 0 40px #00d9ff, inset 0 0 35px #007ca8;
+      }
+    }
+
+    .core h2 {
+      font-family: Orbitron, sans-serif;
+      font-size: 15px;
+      letter-spacing: 4px;
+      color: #54dfff;
+      margin: 15px 0 5px;
+    }
+
+    .core p {
+      font-size: 12px;
+      color: #7d9bad;
+    }
+
+    .chat {
+      flex: 1;
+      min-height: 120px;
+      overflow-y: auto;
+      padding: 12px 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .message {
+      max-width: 85%;
+      padding: 13px 16px;
+      border-radius: 12px;
+      line-height: 1.5;
+      font-size: 14px;
+      overflow-wrap: anywhere;
+    }
+
+    .user {
+      align-self: flex-end;
+      background: #103c59;
+      border: 1px solid #167aa3;
+    }
+
+    .assistant {
+      align-self: flex-start;
+      background: #101d2d;
+      border: 1px solid #1b536d;
+    }
+
+    .label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: #55dfff;
+      margin-bottom: 5px;
+    }
+
+    .composer {
+      border-top: 1px solid #12334a;
+      padding-top: 15px;
+    }
+
+    .input-row {
+      display: flex;
+      gap: 9px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      padding: 15px;
+      color: white;
+      background: #0b1726;
+      border: 1px solid #1c5872;
+      border-radius: 9px;
+      outline: none;
+      font-size: 14px;
+    }
+
+    input:focus {
+      border-color: #38dfff;
+      box-shadow: 0 0 10px #007ca8;
+    }
+
+    button, .upload-label {
+      cursor: pointer;
+      border: 1px solid #27cfff;
+      color: #62eaff;
+      background: #092338;
+      border-radius: 9px;
+      padding: 12px 15px;
+      font-weight: 600;
+    }
+
+    button:hover, .upload-label:hover {
+      background: #10405b;
+    }
+
+    .send {
+      background: #087ca2;
+      color: white;
+    }
+
+    .tools {
+      display: flex;
+      gap: 9px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tools button, .upload-label {
+      font-size: 12px;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    #fileName {
+      color: #82b8c9;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 12px 0 2px;
+      color: #496b7e;
+      font-size: 10px;
+      letter-spacing: 2px;
+    }
+
+    @media (max-width: 600px) {
+      .app {
+        padding: 12px;
+      }
+
+      .logo {
+        font-size: 20px;
+      }
+
+      .orb {
+        width: 95px;
+        height: 95px;
+      }
+
+      .message {
+        max-width: 94%;
+      }
+
+      button, .upload-label {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <header>
+      <div class="logo">DEMIO</div>
+      <div class="status" id="status">● SYSTEM ONLINE</div>
+    </header>
+
+    <main class="main">
+
+      <section class="core">
+        <div class="orb"></div>
+        <h2>NEURAL CORE</h2>
+        <p id="coreStatus">Your assistant is ready.</p>
+      </section>
+
+      <section class="chat" id="chat">
+        <div class="message assistant">
+          <span class="label">DEMIO</span>
+          Hello! I am DEMIO. Your neural core is online. How can I help you?
+        </div>
+      </section>
+
+      <section class="composer">
+        <div class="input-row">
+          <input
+            id="txt"
+            type="text"
+            placeholder="Ask DEMIO anything..."
+            autocomplete="off"
+          >
+          <button class="send" id="send">SEND</button>
+        </div>
+
+        <div class="tools">
+          <label class="upload-label" for="fileInput">UPLOAD FILE</label>
+          <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.txt">
+
+          <button id="voiceBtn">VOICE: OFF</button>
+          <button id="clearBtn">CLEAR CHAT</button>
+        </div>
+
+        <div id="fileName"></div>
+      </section>
+
+    </main>
+
+    <footer>DEMIO NEURAL INTERFACE · VERSION 1.0</footer>
+  </div>
+
+  <script>
+    // BACKEND SETTINGS
+    const DEMO = false;
+    const API_URL = "/chat";
+
+    const $ = id => document.getElementById(id);
+
+    let voiceEnabled = false;
+    let selectedFile = null;
+
+    function addMessage(text, sender) {
+      const message = document.createElement("div");
+      message.className = "message " + sender;
+
+      const label = document.createElement("span");
+      label.className = "label";
+      label.textContent = sender === "user" ? "YOU" : "DEMIO";
+
+      const content = document.createElement("div");
+      content.textContent = text;
+
+      message.appendChild(label);
+      message.appendChild(content);
+
+      $("chat").appendChild(message);
+      $("chat").scrollTop = $("chat").scrollHeight;
+    }
+
+    function speak(text) {
+      if (!voiceEnabled || !("speechSynthesis" in window)) return;
+
+      window.speechSynthesis.cancel();
+
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.rate = 1;
+      speech.pitch = 1;
+
+      window.speechSynthesis.speak(speech);
+    }
+
+    async function send(text) {
+      text = text.trim();
+
+      if (!text && !selectedFile) return;
+
+      if (selectedFile && !text) {
+        addMessage("Selected file: " + selectedFile.name, "user");
+        $("coreStatus").textContent =
+          "File selected. File analysis is not connected yet.";
+        selectedFile = null;
+        $("fileInput").value = "";
+        $("fileName").textContent = "";
+        return;
+      }
+
+      addMessage(text, "user");
+
+      $("txt").value = "";
+      $("coreStatus").textContent = "DEMIO is processing...";
+      $("status").textContent = "● PROCESSING";
+
+      try {
+        let reply = "";
 
         if (DEMO) {
-            await new Promise(resolve =>
-                setTimeout(resolve, 1000)
-            );
+          await new Promise(resolve => setTimeout(resolve, 1000));
 
-            data = {
-                reply: "Hello! I am DEMIO. Your neural core is online."
-            };
-
+          reply = "Hello! I am DEMIO. Your neural core is online.";
         } else {
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    message: text
-                })
-            });
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              message: text
+            })
+          });
 
-            data = await response.json();
+          const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.error || "Server error");
-            }
+          if (!response.ok) {
+            throw new Error(data.error || "Server request failed");
+          }
+
+          reply = data.reply || "I received your message.";
         }
 
-        const reply =
-            data.reply ||
-            data.response ||
-            data.message ||
-            "No response received.";
+        addMessage(reply, "assistant");
+        speak(reply);
 
-        history.push({
-            role: "assistant",
-            content: reply
-        });
+        $("coreStatus").textContent = "Ready for your next command.";
+        $("status").textContent = "● SYSTEM ONLINE";
 
-        thinking = false;
+      } catch (error) {
+        addMessage("Connection failed: " + error.message, "assistant");
 
-        add("assistant", reply);
+        $("coreStatus").textContent = "Connection error.";
+        $("status").textContent = "● CONNECTION ERROR";
 
-        if (mode === "voice") {
-            speak(reply);
-        } else {
-            setStatus("CHAT // TEXT ONLY");
-        }
-
-    } catch (err) {
-        thinking = false;
-
-        add(
-            "assistant",
-            "Connection failed: " + err.message
-        );
-
-        setStatus("ERROR");
+        console.error(error);
+      }
     }
-}
+
+    $("send").onclick = () => send($("txt").value);
+
+    $("txt").onkeydown = event => {
+      if (event.key === "Enter") {
+        send($("txt").value);
+      }
+    };
+
+    $("voiceBtn").onclick = () => {
+      voiceEnabled = !voiceEnabled;
+
+      $("voiceBtn").textContent =
+        voiceEnabled ? "VOICE: ON" : "VOICE: OFF";
+
+      if (!voiceEnabled && "speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+
+    $("clearBtn").onclick = () => {
+      $("chat").innerHTML = "";
+
+      addMessage(
+        "Chat cleared. I am ready for your next command.",
+        "assistant"
+      );
+    };
+
+    $("fileInput").onchange = event => {
+      selectedFile = event.target.files[0] || null;
+
+      $("fileName").textContent = selectedFile
+        ? "Selected: " + selectedFile.name
+        : "";
+    };
+  </script>
+</body>
+</html>
