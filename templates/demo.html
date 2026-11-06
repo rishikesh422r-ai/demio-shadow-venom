@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DEMIO Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#010509;--c:#00f0ff;--a:#ffb020;--dim:#4f8aa0;--ink:#dcfbff;--line:#0b4256;--f:'Orbitron',system-ui,sans-serif;--b:'Rajdhani',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font:500 16px/1.4 var(--b);display:flex;flex-direction:column;overflow:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);position:relative}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 28%,#00b4d83a,transparent 55%),linear-gradient(#00f0ff08 1px,transparent 1px) 0 0/100% 34px,linear-gradient(90deg,#00f0ff08 1px,transparent 1px) 0 0/34px 100%}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:6;background:repeating-linear-gradient(0deg,#0000 0 2px,#00f0ff09 2px 3px);animation:flick 5s infinite}
+@keyframes flick{0%,96%,100%{opacity:1}97%{opacity:.5}98%{opacity:1}99%{opacity:.6}}
+body.listening{--c:#ffb020;--a:#00f0ff}
+.brand{text-align:center;padding:12px 16px 0;position:relative;z-index:2}
+.brand h1{font:900 28px var(--f);letter-spacing:.5em;padding-left:.5em;color:#fff;text-shadow:0 0 6px var(--c),0 0 22px var(--c),0 0 46px var(--c);animation:gl 6s infinite}
+@keyframes gl{0%,93%,100%{transform:none}94%{transform:translateX(-3px);text-shadow:3px 0 #ff2d6f,-3px 0 var(--c)}96%{transform:translateX(3px)}}
+.brand p{font:500 9px var(--f);letter-spacing:.45em;color:var(--c);opacity:.8;margin-top:3px}
+.tel{display:flex;justify-content:space-between;padding:6px 18px 0;font:500 9px var(--f);letter-spacing:.2em;color:var(--dim);position:relative;z-index:2}
+.tel b{color:var(--c)}
+.stage{position:relative;flex:none;height:330px;display:flex;align-items:center;justify-content:center;z-index:1}
+canvas{width:330px;height:330px;max-width:100%}
+.hex{position:absolute;top:30px;bottom:30px;width:44px;font:500 8px/1.35 monospace;color:var(--c);opacity:.5;overflow:hidden;word-break:break-all;-webkit-mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent);mask-image:linear-gradient(transparent,#000 25%,#000 75%,transparent)}
+#hl{left:8px}#hr{right:8px;text-align:right}
+.br{position:absolute;width:20px;height:20px;border:2px solid var(--c);filter:drop-shadow(0 0 5px var(--c))}
+.br.tl{top:4px;left:6px;border-right:0;border-bottom:0}.br.tr{top:4px;right:6px;border-left:0;border-bottom:0}
+.br.bl{bottom:4px;left:6px;border-right:0;border-top:0}.br.brr{bottom:4px;right:6px;border-left:0;border-top:0}
+#status{position:absolute;bottom:4px;left:0;right:0;text-align:center;font:700 11px var(--f);letter-spacing:.4em;color:var(--c);text-shadow:0 0 12px var(--c)}
+.modes{display:flex;gap:10px;padding:0 16px 8px;position:relative;z-index:2}
+.modes button{flex:1;padding:11px 0;background:#02121a;border:1px solid var(--line);color:var(--dim);font:700 11px var(--f);letter-spacing:.3em;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.modes button.on{background:linear-gradient(#073b4d,#021a24);color:var(--c);border-color:var(--c);text-shadow:0 0 10px var(--c);box-shadow:inset 0 0 18px #00f0ff44}
+#log{flex:1;overflow-y:auto;padding:6px 16px;display:flex;flex-direction:column;gap:10px;position:relative;z-index:2;min-height:0}
+.m{max-width:90%;padding:10px 14px;background:#041c28dd;border-left:3px solid var(--c);clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,0 100%);white-space:pre-wrap;word-wrap:break-word;font-size:17px;box-shadow:inset 0 0 20px #00f0ff18}
+.m.u{align-self:flex-end;border-left:0;border-right:3px solid var(--a);background:#1d1303dd;clip-path:polygon(14px 0,100% 0,100% 100%,0 100%,0 14px);box-shadow:inset 0 0 20px #ffb02018}
+.m small{display:flex;align-items:center;gap:6px;font:500 9px var(--f);letter-spacing:.3em;color:var(--c);margin-bottom:3px}.m.u small{color:var(--a)}
+.m>img,.m>video{max-width:100%;display:block;margin-bottom:6px;border:1px solid var(--c)}
+.av{width:20px;height:20px;border-radius:50%;border:1px solid currentColor;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;font:700 10px var(--f);flex:none}
+.av img{width:100%;height:100%;object-fit:cover}
+#prof{position:absolute;left:14px;top:12px;width:42px;height:42px;border-radius:50%;border:1px solid var(--c);background:#02121a;color:var(--c);font:700 15px var(--f);z-index:3;overflow:hidden;padding:0;box-shadow:0 0 14px var(--c)}
+#prof img{width:100%;height:100%;object-fit:cover;display:block}
+#pm{position:fixed;inset:0;background:#010509ee;z-index:15;display:none;align-items:center;justify-content:center;padding:20px}
+#pm.on{display:flex}
+.card{width:100%;max-width:340px;border:1px solid var(--c);background:#041c28;padding:22px;display:flex;flex-direction:column;gap:14px;align-items:center;box-shadow:0 0 30px #00f0ff44;clip-path:polygon(0 0,calc(100% - 18px) 0,100% 18px,100% 100%,18px 100%,0 calc(100% - 18px))}
+.card h2{font:700 13px var(--f);letter-spacing:.35em;color:var(--c)}
+#pav{width:96px;height:96px;border-radius:50%;border:2px solid var(--c);overflow:hidden;display:flex;align-items:center;justify-content:center;font:700 34px var(--f);color:var(--c);box-shadow:0 0 22px var(--c)}
+#pav img{width:100%;height:100%;object-fit:cover}
+.card input[type=text]{width:100%;height:44px;background:#02121a;border:1px solid var(--line);color:var(--ink);padding:0 12px;font:500 17px var(--b);outline:0}
+.card button{width:100%;padding:11px;background:#02121a;border:1px solid var(--c);color:var(--c);font:700 11px var(--f);letter-spacing:.25em}
+.card button.pri{background:linear-gradient(#073b4d,#021a24);box-shadow:inset 0 0 14px #00f0ff55}
+#prev{display:none;align-items:center;gap:10px;padding:4px 16px;font:500 10px var(--f);letter-spacing:.2em;color:var(--dim);position:relative;z-index:2}
+#prev img{height:42px;border:1px solid var(--c)}#prev button{background:none;border:0;color:var(--a);font-size:20px}
+.bar{display:flex;gap:8px;padding:10px 14px 14px;align-items:center;position:relative;z-index:2;border-top:1px solid var(--line);flex:none}
+.bar button{width:46px;height:46px;background:#02121a;border:1px solid var(--c);color:var(--c);font-size:18px;flex:none;clip-path:polygon(25% 0,75% 0,100% 25%,100% 75%,75% 100%,25% 100%,0 75%,0 25%)}
+#txt{flex:1;min-width:0;height:46px;background:#02121a;border:1px solid var(--line);color:var(--ink);padding:0 14px;font:500 17px var(--b);outline:0;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px))}
+#txt:focus{border-color:var(--c)}
+#mic{width:70px!important;height:70px!important;background:radial-gradient(#0a6a80,#021a24)!important;box-shadow:0 0 28px var(--c),inset 0 0 14px var(--c);animation:ring 2.4s infinite}
+@keyframes ring{50%{box-shadow:0 0 44px var(--c),inset 0 0 22px var(--c)}}
+body.chat #mic,body.voice #txt,body.voice #send{display:none}
+body.voice .bar{justify-content:center}
+body.voice #attach{position:absolute;left:14px}
+#boot{position:fixed;inset:0;background:#010509;z-index:20;display:flex;align-items:center;justify-content:center;transition:opacity .8s;pointer-events:none}
+#boot pre{font:500 12px/1.8 var(--f);color:var(--c);letter-spacing:.15em;text-shadow:0 0 8px var(--c)}
+</style>
+</head>
+<body class="voice">
+<div id="boot"><pre id="bt"></pre></div>
+
+<button id="prof" title="Profile">U</button>
+<div class="brand"><h1>DEMIO</h1><p>SHADOW VENOM // NEURAL CORE</p></div>
+<div class="tel"><div>LINK <b>SECURE</b> · <span id="clk">--:--:--</span></div><div><span id="md">VOICE</span> · SYS <b><span id="cpu">42</span>%</b></div></div>
+
+<div class="stage">
+  <i class="br tl"></i><i class="br tr"></i><i class="br bl"></i><i class="br brr"></i>
+  <div class="hex" id="hl"></div><div class="hex" id="hr"></div>
+  <canvas id="cv"></canvas>
+  <div id="status">STANDING BY</div>
+</div>
+
+<div class="modes"><button id="bVoice" class="on">VOICE</button><button id="bChat">CHAT</button></div>
+
+<div id="log"><div class="m"><small>DEMIO</small>Neural core online. Voice mode speaks. Chat mode answers in text only.</div></div>
+
+<div id="prev"><span id="pth"></span><span id="plbl">MEDIA LOADED</span><button id="clr">×</button></div>
+
+<div class="bar">
+  <button id="attach" title="Upload photo">⎘</button>
+  <input id="txt" placeholder="Enter command…" autocomplete="off">
+  <button id="send">➤</button>
+  <button id="mic" title="Talk">🎙</button>
+  <input type="file" id="file" accept="image/*,video/*" hidden>
+</div>
+
+<div id="pm"><div class="card"><h2>PROFILE</h2><div id="pav">U</div>
+<button id="pchg">CHANGE PHOTO</button><input type="file" id="pf" accept="image/*" hidden>
+<input type="text" id="pname" maxlength="20" placeholder="Your name">
+<button class="pri" id="psave">SAVE</button><button id="pclose">CLOSE</button></div></div>
+<script>
+// ===== CONFIG =====
+const DEMO = true;           // true = canned replies (no backend)
+const API_URL = "/api/chat"; // POST {message,image,mode,history} -> {reply}
+// ==================
+
+const $ = id => document.getElementById(id);
+let mode = "voice", media = null, me = {name: "USER", avatar: null}, history = [], rec = null, listening = false, speaking = false, thinking = false;
+const synth = window.speechSynthesis;
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const setStatus = t => $("status").textContent = t;
+
+// ---- Boot sequence ----
+(function(){
+  const L = ["> INITIALIZING DEMIO", "> NEURAL CORE ........ OK", "> VOICE ENGINE ....... OK", "> VISION MODULE ...... OK", "> SHADOW VENOM ONLINE"];
+  let i = 0; const t = setInterval(() => { $("bt").textContent += L[i++] + "\n"; if (i >= L.length){ clearInterval(t); setTimeout(() => { $("boot").style.opacity = 0; setTimeout(() => $("boot").remove(), 900); }, 500); } }, 300);
+})();
+
+// ---- Core visual ----
+const cv = $("cv"), g = cv.getContext("2d"), S = 330, dpr = Math.min(devicePixelRatio || 1, 2);
+cv.width = cv.height = S * dpr; g.scale(dpr, dpr);
+const N = 300, pts = [], edges = [];
+for (let i = 0; i < N; i++){ const y = 1 - 2 * (i + .5) / N, r = Math.sqrt(1 - y * y), t = i * 2.39996; pts.push([Math.cos(t) * r, y, Math.sin(t) * r]); }
+for (let i = 0; i < N; i++) for (let j = i + 1; j < N; j++) if (Math.hypot(pts[i][0] - pts[j][0], pts[i][1] - pts[j][1], pts[i][2] - pts[j][2]) < .3) edges.push([i, j]);
+const RT = "DEMIO // SHADOW VENOM // NEURAL CORE // ".repeat(2);
+let ang = 0, energy = 0, T = 0;
+function frame(){
+  T += .016;
+  const target = speaking ? .95 : listening ? .75 : thinking ? .6 : .15;
+  energy += (target - energy) * .06;
+  const wob = energy * (.5 + .5 * Math.sin(T * (speaking ? 14 : 6)));
+  ang += .005 + energy * .025;
+  const C = listening ? "255,176,32" : "0,240,255", D = listening ? "0,240,255" : "255,176,32";
+  g.clearRect(0, 0, S, S); g.save(); g.translate(S / 2, S / 2); g.globalCompositeOperation = "lighter";
+  // radar sweep
+  if (g.createConicGradient){ const cg = g.createConicGradient(T * 1.6, 0, 0); cg.addColorStop(0, `rgba(${C},.4)`); cg.addColorStop(.14, `rgba(${C},0)`); cg.addColorStop(1, `rgba(${C},0)`); g.fillStyle = cg; g.beginPath(); g.arc(0, 0, 112, 0, 7); g.fill(); }
+  // tick ring
+  g.save(); g.rotate(-T * .08); g.strokeStyle = `rgba(${C},.6)`; g.lineWidth = 1;
+  for (let i = 0; i < 120; i++){ g.rotate(Math.PI * 2 / 120); const l = i % 10 ? 4 : 11; g.beginPath(); g.moveTo(0, -162); g.lineTo(0, -162 + l); g.stroke(); } g.restore();
+  // ring text
+  g.save(); g.rotate(T * .12); g.font = "9px Orbitron, monospace"; g.textAlign = "center"; g.fillStyle = `rgba(${C},.75)`;
+  for (let i = 0; i < RT.length; i++){ g.save(); g.rotate(i / RT.length * 6.2832); g.translate(0, -146); g.fillText(RT[i], 0, 0); g.restore(); } g.restore();
+  // glowing arcs
+  g.lineCap = "round"; g.shadowBlur = 14;
+  g.lineWidth = 3; g.strokeStyle = g.shadowColor = `rgba(${C},.95)`;
+  for (let k = 0; k < 3; k++){ g.beginPath(); g.arc(0, 0, 130, T * .7 + k * 2.1, T * .7 + k * 2.1 + .85); g.stroke(); }
+  g.lineWidth = 2; g.strokeStyle = g.shadowColor = `rgba(${D},.9)`;
+  for (let k = 0; k < 2; k++){ g.beginPath(); g.arc(0, 0, 120, -T * 1.2 + k * 3.1, -T * 1.2 + k * 3.1 + .5); g.stroke(); }
+  // satellites
+  g.fillStyle = `rgba(${D},1)`; g.shadowColor = `rgba(${D},1)`;
+  for (let k = 0; k < 3; k++){ const a = T * (.9 + k * .3) + k * 2.1; g.beginPath(); g.arc(Math.cos(a) * 137, Math.sin(a) * 137, 3.2, 0, 7); g.fill(); }
+  g.shadowBlur = 0;
+  // waveform ring
+  g.beginPath();
+  for (let i = 0; i <= 140; i++){ const a = i / 140 * 6.2832, n = Math.sin(a * 7 + T * 5) * Math.sin(a * 3 - T * 3), r = 108 + n * energy * 15; const x = Math.cos(a) * r, y = Math.sin(a) * r; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+  g.strokeStyle = `rgba(${D},${.35 + energy * .6})`; g.lineWidth = 1.6; g.stroke();
+  // neural sphere
+  const R = 86 + wob * 14, cy = Math.cos(ang), sy = Math.sin(ang), ct = Math.cos(.4), st = Math.sin(.4);
+  const P = pts.map(p => { const x = p[0] * cy - p[2] * sy, z = p[0] * sy + p[2] * cy, y = p[1] * ct - z * st, z2 = p[1] * st + z * ct, s = 1 / (1.7 - z2 * .5); return [x * R * s, y * R * s, z2]; });
+  for (const front of [false, true]){
+    g.beginPath(); for (const [i, j] of edges){ if ((P[i][2] + P[j][2] > 0) === front){ g.moveTo(P[i][0], P[i][1]); g.lineTo(P[j][0], P[j][1]); } }
+    g.strokeStyle = `rgba(${C},${front ? .5 : .13})`; g.lineWidth = front ? .9 : .6; g.stroke();
+  }
+  for (let i = 0; i < N; i++){ const p = P[i], pulse = Math.max(0, Math.sin(T * 3 + i * .7)); g.fillStyle = `rgba(${pulse > .93 ? D : C},${.25 + (p[2] + 1) * .35 + (pulse > .93 ? .5 : 0)})`; g.beginPath(); g.arc(p[0], p[1], (p[2] > 0 ? 1.7 : 1) + (pulse > .93 ? 1.6 : 0), 0, 7); g.fill(); }
+  // core glow
+  const rr = 30 + wob * 22, cg2 = g.createRadialGradient(0, 0, 0, 0, 0, rr); cg2.addColorStop(0, `rgba(${C},.95)`); cg2.addColorStop(1, `rgba(${C},0)`);
+  g.fillStyle = cg2; g.beginPath(); g.arc(0, 0, rr, 0, 7); g.fill();
+  g.restore(); requestAnimationFrame(frame);
+}
+frame();
+const hx = () => Array.from({length: 40}, () => Math.floor(Math.random() * 256).toString(16).padStart(2, "0")).join(" ");
+setInterval(() => { $("hl").textContent = hx(); $("hr").textContent = hx(); }, 140);
+setInterval(() => { $("clk").textContent = new Date().toLocaleTimeString([], {hour12: false}); $("cpu").textContent = Math.round(30 + Math.random() * 25 + energy * 30); }, 1000);
+
+// ---- Chat ----
+function add(role, text, m){
+  const u = role === "user", d = document.createElement("div"); d.className = "m" + (u ? " u" : "");
+  const h = document.createElement("small"), a = document.createElement("span"); a.className = "av";
+  if (u && me.avatar){ const i = new Image(); i.src = me.avatar; a.appendChild(i); } else a.textContent = u ? (me.name[0] || "U").toUpperCase() : "D";
+  h.append(a, document.createTextNode(u ? me.name : "DEMIO")); d.appendChild(h);
+  if (m){ let el; if (m.type === "video"){ el = document.createElement("video"); el.src = m.src; el.controls = true; el.playsInline = true; } else { el = new Image(); el.src = m.src; } d.appendChild(el); }
+  d.appendChild(document.createTextNode(text)); $("log").appendChild(d); $("log").scrollTop = 1e9;
+}
+function setMode(m){
+  mode = m; document.body.className = m + (listening ? " listening" : "");
+  $("bVoice").classList.toggle("on", m === "voice"); $("bChat").classList.toggle("on", m === "chat");
+  $("md").textContent = m.toUpperCase();
+  if (m === "chat"){ synth && synth.cancel(); speaking = false; stopListen(); setStatus("CHAT // TEXT ONLY"); }
+  else setStatus("VOICE // TAP TO TALK");
+}
+$("bVoice").onclick = () => setMode("voice"); $("bChat").onclick = () => setMode("chat");
+
+function grabFrames(url){ return new Promise(res => {
+  const v = document.createElement("video"); v.muted = true; v.playsInline = true; v.preload = "auto"; v.src = url; const out = [];
+  v.onloadedmetadata = () => { const d = v.duration || 1, ts = [.1, .5, .9].map(x => x * d), c = document.createElement("canvas"), w = Math.min(640, v.videoWidth || 640);
+    c.width = w; c.height = Math.round(w * (v.videoHeight || 360) / (v.videoWidth || 640)); let i = 0;
+    v.onseeked = () => { c.getContext("2d").drawImage(v, 0, 0, c.width, c.height); out.push(c.toDataURL("image/jpeg", .7)); if (++i < ts.length) v.currentTime = ts[i]; else res(out); };
+    v.currentTime = ts[0]; };
+  v.onerror = () => res([]); }); }
+function showPrev(m){ const t = $("pth"); t.innerHTML = ""; let el;
+  if (m.type === "video"){ el = document.createElement("video"); el.muted = true; } else el = new Image();
+  el.src = m.src; el.style.cssText = "height:42px;border:1px solid var(--c)"; t.appendChild(el);
+  $("plbl").textContent = m.type === "video" ? "VIDEO LOADED" : "IMAGE LOADED"; $("prev").style.display = "flex"; }
+$("attach").onclick = () => $("file").click();
+$("file").onchange = async e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return;
+  if (f.type.startsWith("video/")){
+    if (f.size > 50e6){ setStatus("VIDEO TOO LARGE (50MB MAX)"); return; }
+    setStatus("READING VIDEO"); const url = URL.createObjectURL(f), frames = await grabFrames(url);
+    media = {type: "video", src: url, frames}; showPrev(media); setStatus(mode === "voice" ? "VOICE // TAP TO TALK" : "CHAT // TEXT ONLY");
+  } else { const r = new FileReader(); r.onload = () => { media = {type: "image", src: r.result}; showPrev(media); }; r.readAsDataURL(f); } };
+$("clr").onclick = () => { media = null; $("prev").style.display = "none"; };
+
+// ---- Profile ----
+let tmpAv = null;
+try{ const sv = JSON.parse(localStorage.getItem("demio_me")); if (sv) me = sv; }catch(e){}
+function paintMe(){ const ini = (me.name[0] || "U").toUpperCase();
+  for (const id of ["prof", "pav"]) $(id).innerHTML = me.avatar ? '<img src="' + me.avatar + '" alt="">' : ini; $("pname").value = me.name; }
+$("prof").onclick = () => { tmpAv = me.avatar; paintMe(); $("pm").classList.add("on"); };
+$("pclose").onclick = () => $("pm").classList.remove("on");
+$("pchg").onclick = () => $("pf").click();
+$("pf").onchange = e => { const f = e.target.files[0]; e.target.value = ""; if (!f) return; const r = new FileReader();
+  r.onload = () => { const im = new Image(); im.onload = () => { const c = document.createElement("canvas"); c.width = c.height = 160; const s = Math.min(im.width, im.height);
+    c.getContext("2d").drawImage(im, (im.width - s) / 2, (im.height - s) / 2, s, s, 0, 0, 160, 160); tmpAv = c.toDataURL("image/jpeg", .8);
+    $("pav").innerHTML = '<img src="' + tmpAv + '" alt="">'; }; im.src = r.result; }; r.readAsDataURL(f); };
+$("psave").onclick = () => { me = {name: $("pname").value.trim() || "USER", avatar: tmpAv}; try{ localStorage.setItem("demio_me", JSON.stringify(me)); }catch(e){} paintMe(); $("pm").classList.remove("on"); };
+paintMe();
+
+function speak(text){
+  if (mode !== "voice" || !synth) return; synth.cancel();
+  const u = new SpeechSynthesisUtterance(text); u.rate = .95; u.pitch = .75;
+  u.onstart = () => { speaking = true; setStatus("TRANSMITTING"); };
+  u.onend = u.onerror = () => { speaking = false; setStatus("VOICE // TAP TO TALK"); };
+  synth.speak(u);
+}
+function startListen(){
+  if (!SR){ setStatus("VOICE INPUT UNSUPPORTED"); return; }
+  synth.cancel(); speaking = false; rec = new SR(); rec.lang = "en-US";
+  rec.onstart = () => { listening = true; document.body.classList.add("listening"); setStatus("LISTENING"); };
+  rec.onend = () => { listening = false; document.body.classList.remove("listening"); };
+  rec.onresult = e => send(e.results[0][0].transcript);
+  rec.onerror = () => setStatus("SIGNAL LOST // RETRY"); rec.start();
+}
+function stopListen(){ if (rec && listening) rec.stop(); }
+$("mic").onclick = () => listening ? stopListen() : startListen();
+
+async function send(text){
+  text = (text || "").trim(); if (!text && !media) return;
+  const m = media; add("user", text, m); $("txt").value = ""; $("clr").onclick();
+  thinking = true; setStatus("PROCESSING"); history.push({role: "user", content: text});
+  try{
+    let data;
+    if (DEMO){ await new Promise(r => setTimeout(r, 1100));
+      data = {reply: m ? (m.type === "video" ? "Video received. In the live system I would analyse its frames and answer your question." : "Image received. In the live system I would analyse it and answer your question.") : "Demo response. In voice mode I answer aloud. In chat mode you get text only."}; }
+    else { const res = await fetch(API_URL, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({message: text, image: m ? (m.type === "video" ? m.frames[0] || null : m.src) : null, frames: m && m.type === "video" ? m.frames : null, media_type: m ? m.type : null, profile: {name: me.name}, mode, history: history.slice(-12)})}); data = await res.json(); }
+    const reply = data.reply || data.response || data.message || "No response received.";
+    history.push({role: "assistant", content: reply}); thinking = false; add("assistant", reply);
+    if (mode === "voice") speak(reply); else setStatus("CHAT // TEXT ONLY");
+  }catch(err){ thinking = false; add("assistant", "Connection failed. Check API_URL in the script."); setStatus("ERROR"); }
+}
+$("send").onclick = () => send($("txt").value);
+$("txt").onkeydown = e => { if (e.key === "Enter") send($("txt").value); };
+setMode("voice");
+</script>
+</body>
+</html>
