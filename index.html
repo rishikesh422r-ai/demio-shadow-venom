@@ -2,447 +2,213 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ULTRON AI SYSTEM</title>
-
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08090d">
+<title>DEMIO — ULTRON AI</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-
-body{
- background:#030307;
- color:#ff253d;
- font-family:Arial,sans-serif;
- overflow:hidden;
-}
-
-#hud{
- position:fixed;
- inset:0;
- pointer-events:none;
- z-index:5;
- padding:25px;
-}
-
-.top{
- display:flex;
- justify-content:space-between;
- border-bottom:1px solid #a80020;
- padding-bottom:18px;
- letter-spacing:4px;
- text-shadow:0 0 12px red;
- font-weight:bold;
-}
-
-.logo{font-size:25px;color:#ff1835}
-
-.center-title{
- position:absolute;
- top:15%;
- left:50%;
- transform:translateX(-50%);
- text-align:center;
- width:100%;
- letter-spacing:4px;
-}
-
-.center-title h2{
- font-size:22px;
- text-shadow:0 0 15px red;
-}
-
-.center-title p{
- margin-top:9px;
- font-size:10px;
- letter-spacing:5px;
-}
-
-#scene{
- position:fixed;
- inset:0;
- width:100%;
- height:100%;
-}
-
-.bottom{
- position:absolute;
- bottom:25px;
- left:25px;
- right:25px;
- display:flex;
- gap:12px;
-}
-
-.panel{
- flex:1;
- border:1px solid #8c1025;
- background:rgba(35,0,8,.65);
- padding:13px;
- font-size:10px;
- letter-spacing:2px;
-}
-
-.panel strong{
- display:block;
- margin-top:8px;
- font-size:15px;
- color:#ff253d;
-}
-
-.status{
- position:absolute;
- bottom:115px;
- width:100%;
- text-align:center;
- font-size:12px;
- letter-spacing:3px;
- text-shadow:0 0 12px red;
-}
-
-@media(max-width:600px){
- #hud{padding:15px}
- .logo{font-size:18px}
- .center-title{top:17%}
- .center-title h2{font-size:15px}
- .bottom{left:12px;right:12px;gap:5px;bottom:15px}
- .panel{padding:8px;font-size:8px}
- .panel strong{font-size:11px}
- .status{bottom:90px;font-size:9px}
+*{box-sizing:border-box}
+body{margin:0;background:#08090d;color:#eee;font-family:Arial,sans-serif}
+:root{--red:#ff2447;--line:#34202a;--muted:#999}
+button,input,textarea{font:inherit}
+button{cursor:pointer}
+.app{height:100dvh;display:grid;grid-template-columns:245px 1fr;overflow:hidden}
+.sidebar{background:#0c0d13;border-right:1px solid var(--line);padding:20px;display:flex;flex-direction:column;gap:14px}
+.brand{font-size:25px;font-weight:900;letter-spacing:4px;color:var(--red);text-shadow:0 0 15px #a80032}
+.sub{font-size:10px;letter-spacing:3px;color:#aaa}
+.new{padding:13px;background:#200d16;border:1px solid #a51b3b;color:#fff;border-radius:9px}
+.section{font-size:10px;letter-spacing:3px;color:#777;margin-top:12px}
+.mode{background:transparent;border:1px solid transparent;color:#bbb;text-align:left;padding:12px;border-radius:8px}
+.mode.active,.mode:hover{background:#211019;border-color:#722039;color:#fff}
+.mode span{color:var(--red);margin-right:9px}
+.sidebottom{margin-top:auto;color:#777;font-size:11px;line-height:2}
+.main{min-width:0;display:flex;flex-direction:column;background:radial-gradient(ellipse at 50% 0%,#25101a 0%,#0b0c12 43%,#08090d 80%)}
+.top{height:65px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px}
+.top strong{letter-spacing:2px;font-size:12px}
+.online{font-size:10px;color:#ff7185;letter-spacing:2px}
+.content{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center}
+.hero{text-align:center;padding:25px 10px 12px}
+.orb{width:115px;height:115px;border-radius:50%;margin:auto auto 13px;border:1px solid #a92743;box-shadow:0 0 35px #7c102d,inset 0 0 30px #74152b;background:radial-gradient(circle at 35% 25%,#9c3448,#32101c 45%,#090a10 75%);position:relative;animation:pulse 3s infinite}
+.orb:before{content:"";position:absolute;left:23px;right:23px;top:42px;height:9px;background:#ff183f;filter:blur(5px);box-shadow:0 0 16px 7px #ff183f;border-radius:50%}
+.orb:after{content:"";position:absolute;left:35px;right:35px;top:43px;height:4px;background:#fff;box-shadow:0 0 12px #ff2348}
+@keyframes pulse{50%{box-shadow:0 0 55px #b5163e,inset 0 0 35px #8c1738}}
+.hero h1{font-size:17px;letter-spacing:4px;margin:0 0 7px}
+.hero p{font-size:10px;color:#aaa;letter-spacing:2px}
+.chat{width:min(850px,100%);padding:10px 20px;flex:1;overflow-y:auto}
+.msg{display:flex;margin:13px 0;gap:10px;align-items:flex-start}
+.avatar{flex:0 0 30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#32101d;color:#ff5573;font-size:11px}
+.bubble{max-width:85%;padding:13px 15px;background:#14151d;border:1px solid #30212a;border-radius:4px 13px 13px 13px;line-height:1.55;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.user{justify-content:flex-end}
+.msg.user .bubble{background:#29101a;border-color:#79233c;border-radius:13px 4px 13px 13px}
+.msg.user .avatar{order:2;background:#501326;color:white}
+.composer{width:min(850px,100%);padding:12px 18px 20px}
+.uploads{display:flex;gap:7px;flex-wrap:wrap}
+.filetag{font-size:11px;color:#ff9aaa;border:1px solid #713044;border-radius:20px;padding:6px 10px}
+.inputbox{border:1px solid #673044;background:#11121a;border-radius:14px;padding:10px;display:flex;align-items:flex-end;gap:8px}
+.inputbox textarea{flex:1;resize:none;background:transparent;color:white;border:0;outline:0;min-height:42px;max-height:120px;padding:10px}
+.iconbtn{width:40px;height:40px;border-radius:10px;background:#21121a;border:1px solid #673044;color:#ff718a}
+.send{background:#d91e42;color:white;border:0}
+.hint{text-align:center;color:#777;font-size:10px;margin-top:9px}
+#file{display:none}
+@media(max-width:650px){
+.app{grid-template-columns:65px 1fr}
+.sidebar{padding:12px 6px;align-items:center}
+.brand{font-size:11px;letter-spacing:1px}
+.sub,.section,.mode .label,.sidebottom,.new .label{display:none}
+.new{width:45px;height:43px;padding:5px}
+.mode{width:48px;height:45px;text-align:center;padding:8px;font-size:18px}
+.mode span{margin:0}
+.top{padding:0 12px}
+.hero{padding-top:17px}
+.orb{width:85px;height:85px}
+.orb:before{top:31px}
+.orb:after{top:32px}
+.chat{padding:5px 10px}
+.composer{padding:8px}
+.bubble{font-size:13px}
 }
 </style>
 </head>
-
 <body>
-
-<canvas id="scene"></canvas>
-
-<div id="hud">
-
- <div class="top">
-  <div class="logo">ULTRON.</div>
-  <div>AI CORE // 2099</div>
+<div class="app">
+<aside class="sidebar">
+ <div class="brand">DEMIO</div>
+ <div class="sub">ULTRON INTELLIGENCE</div>
+ <button class="new" onclick="newChat()">＋ <span class="label">NEW CHAT</span></button>
+ <div class="section">AI MODULES</div>
+ <button class="mode active" data-mode="supervisor" onclick="setMode(this)"><span>◈</span><span class="label">Supervisor</span></button>
+ <button class="mode" data-mode="tamil" onclick="setMode(this)"><span>அ</span><span class="label">Tamil AI</span></button>
+ <button class="mode" data-mode="mentor" onclick="setMode(this)"><span>✦</span><span class="label">Exercise Mentor</span></button>
+ <button class="mode" data-mode="game" onclick="setMode(this)"><span>⚡</span><span class="label">Game & Quiz</span></button>
+ <button class="mode" data-mode="friendly" onclick="setMode(this)"><span>♡</span><span class="label">Friendly Talk</span></button>
+ <div class="sidebottom">DEMIO AI CORE<br>ALL SYSTEMS READY<br>VERSION 2.0</div>
+</aside>
+<main class="main">
+ <header class="top">
+  <strong id="modeTitle">SUPERVISOR MODE</strong>
+  <span class="online">● AI INTERFACE</span>
+ </header>
+ <div class="content">
+  <div class="hero">
+   <div class="orb"></div>
+   <h1>HOW CAN I HELP YOU?</h1>
+   <p>ONE INTELLIGENCE. MANY CAPABILITIES.</p>
+  </div>
+  <div class="chat" id="chat">
+   <div class="msg">
+    <div class="avatar">AI</div>
+    <div class="bubble">Hello! I am DEMIO. உங்கள் AI நண்பன்! I can help with Tamil conversations, exercise mentoring, games, learning and everyday tasks. Choose a mode and let's begin.</div>
+   </div>
+  </div>
+  <div class="composer">
+   <div class="uploads" id="uploads"></div>
+   <div class="inputbox">
+    <button class="iconbtn" onclick="document.getElementById('file').click()" title="Attach files">＋</button>
+    <input type="file" id="file" multiple accept="*/*">
+    <textarea id="message" placeholder="Message DEMIO..." rows="1"></textarea>
+    <button class="iconbtn send" onclick="sendMessage()">➤</button>
+   </div>
+   <div class="hint">Attach files · Tamil & English · Enter to send</div>
+  </div>
  </div>
-
- <div class="center-title">
-  <h2>ARTIFICIAL INTELLIGENCE</h2>
-  <p>ADVANCED NEURAL SYSTEM</p>
- </div>
-
- <div class="status">
-  <div>ADVANCED ANDROID INTELLIGENCE</div>
-  <br>
-  <div id="status">● SYSTEM INITIALIZING</div>
- </div>
-
- <div class="bottom">
-  <div class="panel">NEURAL CORE<strong>ACTIVE</strong></div>
-  <div class="panel">AI ENGINE<strong>ONLINE</strong></div>
-  <div class="panel">SECURITY<strong>ONLINE</strong></div>
- </div>
-
+</main>
 </div>
+<script>
+let mode="supervisor";
+let selectedFiles=[];
 
-<script type="module">
-import * as THREE from
-'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+const titles={
+ supervisor:"SUPERVISOR MODE",
+ tamil:"TAMIL AI MODE",
+ mentor:"EXERCISE MENTOR",
+ game:"GAME & QUIZ MODE",
+ friendly:"FRIENDLY TALK"
+};
 
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x030307);
+function setMode(button){
+ document.querySelectorAll(".mode").forEach(x=>x.classList.remove("active"));
+ button.classList.add("active");
+ mode=button.dataset.mode;
+ document.getElementById("modeTitle").textContent=titles[mode];
+}
 
-const camera = new THREE.PerspectiveCamera(
- 38, window.innerWidth/window.innerHeight, .1, 100
-);
-camera.position.set(0,0,10);
+function newChat(){
+ document.getElementById("chat").innerHTML="";
+ selectedFiles=[];
+ renderFiles();
+ addMessage("AI","New conversation started. வணக்கம்! How can I help you?");
+}
 
-const renderer = new THREE.WebGLRenderer({
- canvas:document.getElementById('scene'),
- antialias:true,
- alpha:true
+function addMessage(who,text){
+ const row=document.createElement("div");
+ row.className="msg "+(who==="YOU"?"user":"");
+ const avatar=document.createElement("div");
+ avatar.className="avatar";
+ avatar.textContent=who==="YOU"?"YOU":"AI";
+ const bubble=document.createElement("div");
+ bubble.className="bubble";
+ bubble.textContent=text;
+ row.append(avatar,bubble);
+ document.getElementById("chat").appendChild(row);
+ document.getElementById("chat").scrollTop=999999;
+ return bubble;
+}
+
+document.getElementById("file").addEventListener("change",e=>{
+ selectedFiles.push(...Array.from(e.target.files));
+ renderFiles();
+ e.target.value="";
 });
 
-renderer.setSize(window.innerWidth,window.innerHeight);
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-
-scene.add(new THREE.AmbientLight(0x555566,2));
-
-const redLight=new THREE.PointLight(0xff001c,45,15);
-redLight.position.set(0,1,5);
-scene.add(redLight);
-
-const blueLight=new THREE.PointLight(0x162bff,12,15);
-blueLight.position.set(-4,1,3);
-scene.add(blueLight);
-
-const robot=new THREE.Group();
-scene.add(robot);
-
-const metal=new THREE.MeshStandardMaterial({
- color:0x555b66,
- metalness:.95,
- roughness:.25
-});
-
-const darkMetal=new THREE.MeshStandardMaterial({
- color:0x10131b,
- metalness:.95,
- roughness:.2
-});
-
-const silver=new THREE.MeshStandardMaterial({
- color:0x9ca4b0,
- metalness:1,
- roughness:.2
-});
-
-const red=new THREE.MeshStandardMaterial({
- color:0xff001e,
- emissive:0xff001e,
- emissiveIntensity:4,
- metalness:.4
-});
-
-const black=new THREE.MeshStandardMaterial({
- color:0x030307,
- metalness:.8,
- roughness:.2
-});
-
-function sphere(parent,material,pos,scale){
- const m=new THREE.Mesh(
-  new THREE.SphereGeometry(1,32,24),
-  material
- );
- m.position.set(...pos);
- m.scale.set(...scale);
- parent.add(m);
- return m;
-}
-
-function box(parent,material,pos,scale){
- const m=new THREE.Mesh(
-  new THREE.BoxGeometry(...scale),
-  material
- );
- m.position.set(...pos);
- parent.add(m);
- return m;
-}
-
-// Main robotic head
-sphere(robot,metal,[0,0,0],[1.65,2.05,.85]);
-
-// Forehead armour
-sphere(robot,silver,[0,1.35,.48],[1.25,.62,.42]);
-
-// Central forehead plate
-sphere(robot,darkMetal,[0,1.45,.82],[.5,.38,.16]);
-
-// Jaw
-sphere(robot,darkMetal,[0,-1.05,.35],[1.25,.85,.65]);
-
-// Chin armour
-sphere(robot,silver,[0,-1.62,.55],[.72,.28,.32]);
-
-// Cheeks
-for(const side of [-1,1]){
- sphere(robot,silver,[side*1.05,-.35,.5],[.48,.85,.3]);
- sphere(robot,darkMetal,[side*.8,-.95,.7],[.45,.42,.25]);
-
- // Side temple armour
- sphere(robot,metal,[side*1.45,.55,0],[.28,.75,.65]);
-
- // Side mechanical details
- for(let i=0;i<3;i++){
-  box(robot,silver,[side*1.53,.25-i*.18,.48],[.12,.07,.15]);
- }
-}
-
-// Eyes
-const eyes=[];
-
-for(const side of [-1,1]){
- const eye=sphere(
-  robot,red,[side*.67,.55,.83],[.39,.19,.15]
- );
- eyes.push(eye);
-
- // Eye dark socket
- sphere(robot,black,[side*.67,.55,.72],[.48,.27,.12]);
-
- // Glowing eye placed in front
- sphere(robot,red,[side*.67,.55,.91],[.3,.12,.12]);
-
- // Brow armour
- const brow=sphere(
-  robot,silver,[side*.68,.88,.76],[.57,.16,.23]
- );
- brow.rotation.z=side*.12;
-
- // Under-eye armour
- sphere(robot,darkMetal,[side*.7,.22,.77],[.5,.12,.16]);
-}
-
-// Nose bridge
-sphere(robot,silver,[0,.15,.8],[.18,.65,.23]);
-sphere(robot,darkMetal,[0,-.28,.92],[.27,.25,.2]);
-
-// Mouth mechanical grille
-box(robot,black,[0,-1.1,.88],[.85,.27,.13]);
-
-for(let i=-3;i<=3;i++){
- box(robot,silver,[i*.115,-1.1,.99],[.035,.2,.035]);
-}
-
-// Facial side vents
-for(const side of [-1,1]){
- for(let i=0;i<4;i++){
-  box(robot,darkMetal,[side*.98,-1.1+i*.12,.83],[.18,.045,.08]);
- }
-}
-
-// Head crown
-sphere(robot,metal,[0,1.8,.05],[.65,.27,.5]);
-
-// Neck
-sphere(robot,darkMetal,[0,-2.05,0],[.65,.35,.5]);
-
-// Neck rings
-for(let i=0;i<3;i++){
- const ring=new THREE.Mesh(
-  new THREE.TorusGeometry(.55+i*.05,.045,8,48),
-  silver
- );
- ring.position.set(0,-2.1-i*.12,0);
- robot.add(ring);
-}
-
-// Scan light
-const scanMaterial=new THREE.MeshBasicMaterial({
- color:0xff001e,
- transparent:true,
- opacity:.45,
- side:THREE.DoubleSide
-});
-
-const scan=new THREE.Mesh(
- new THREE.PlaneGeometry(3.2,.025),
- scanMaterial
-);
-scan.position.set(0,0,1.12);
-robot.add(scan);
-
-// Floating HUD rings
-const rings=[];
-
-for(let i=0;i<3;i++){
- const ring=new THREE.Mesh(
-  new THREE.TorusGeometry(2.25+i*.2,.009,8,120),
-  new THREE.MeshBasicMaterial({
-   color:0xff001e,
-   transparent:true,
-   opacity:.4
-  })
- );
- ring.position.z=-.8-i*.1;
- ring.scale.y=.85;
- robot.add(ring);
- rings.push(ring);
-}
-
-// Background particles
-const particleCount=700;
-const positions=new Float32Array(particleCount*3);
-
-for(let i=0;i<particleCount;i++){
- positions[i*3]=(Math.random()-.5)*12;
- positions[i*3+1]=(Math.random()-.5)*9;
- positions[i*3+2]=-2-Math.random()*5;
-}
-
-const particleGeometry=new THREE.BufferGeometry();
-particleGeometry.setAttribute(
- 'position',
- new THREE.BufferAttribute(positions,3)
-);
-
-const particles=new THREE.Points(
- particleGeometry,
- new THREE.PointsMaterial({
-  color:0xff1938,
-  size:.025,
-  transparent:true,
-  opacity:.7
- })
-);
-
-scene.add(particles);
-
-// Mouse tracking
-let mouseX=0,mouseY=0;
-
-window.addEventListener('mousemove',e=>{
- mouseX=(e.clientX/window.innerWidth-.5)*2;
- mouseY=(e.clientY/window.innerHeight-.5)*2;
-});
-
-window.addEventListener('touchmove',e=>{
- if(e.touches.length){
-  mouseX=(e.touches[0].clientX/window.innerWidth-.5)*2;
-  mouseY=(e.touches[0].clientY/window.innerHeight-.5)*2;
- }
-},{passive:true});
-
-// Animation
-const clock=new THREE.Clock();
-
-function animate(){
- requestAnimationFrame(animate);
-
- const t=clock.getElapsedTime();
-
- // Actual 3D head movement
- robot.rotation.y+=
-  (mouseX*.35-robot.rotation.y)*.045;
-
- robot.rotation.x+=
-  (-mouseY*.18-robot.rotation.x)*.045;
-
- robot.position.y=Math.sin(t*.8)*.06;
-
- // Eye pulsing
- eyes.forEach((eye,i)=>{
-  eye.material.emissiveIntensity=
-   2.5+Math.sin(t*4)*1.5;
+function renderFiles(){
+ const area=document.getElementById("uploads");
+ area.innerHTML="";
+ selectedFiles.forEach((f,i)=>{
+ const tag=document.createElement("span");
+ tag.className="filetag";
+ tag.textContent="📎 "+f.name+" ×";
+ tag.onclick=()=>{selectedFiles.splice(i,1);renderFiles()};
+ area.appendChild(tag);
  });
-
- // Scanning animation
- scan.position.y=Math.sin(t*1.3)*1.55;
-
- // HUD ring rotation
- rings.forEach((ring,i)=>{
-  ring.rotation.z=t*(i%2===0?.12:-.12);
- });
-
- // Red light pulse
- redLight.intensity=38+Math.sin(t*3)*10;
-
- particles.rotation.y=t*.015;
-
- renderer.render(scene,camera);
 }
 
-animate();
+async function sendMessage(){
+ const input=document.getElementById("message");
+ const message=input.value.trim();
+ if(!message&&!selectedFiles.length)return;
 
-document.getElementById('status').textContent=
-'● NEURAL SYSTEM ONLINE';
+ addMessage("YOU",message||"Please examine my attached files.");
+ input.value="";
+ const files=[...selectedFiles];
+ selectedFiles=[];
+ renderFiles();
 
-window.addEventListener('resize',()=>{
- camera.aspect=window.innerWidth/window.innerHeight;
- camera.updateProjectionMatrix();
- renderer.setSize(window.innerWidth,window.innerHeight);
- renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+ const reply=addMessage("AI","Connecting to DEMIO AI...");
+ try{
+  const data=new FormData();
+  data.append("message",message);
+  data.append("mode",mode);
+  data.append("language",mode==="tamil"?"Tamil":"Auto");
+  files.forEach(f=>data.append("files",f));
+
+  const response=await fetch("/api/chat",{
+   method:"POST",
+   body:data
+  });
+
+  if(!response.ok)throw new Error("Server error "+response.status);
+  const result=await response.json();
+  reply.textContent=result.reply||result.response||"No response received.";
+ }catch(error){
+  reply.textContent="AI connection failed. Please check that your app.py has a working POST /api/chat endpoint and that the AI service is configured. Error: "+error.message;
+ }
+}
+
+document.getElementById("message").addEventListener("keydown",e=>{
+ if(e.key==="Enter"&&!e.shiftKey){
+  e.preventDefault();
+  sendMessage();
+ }
 });
 </script>
-
 </body>
 </html>
