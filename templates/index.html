@@ -1,434 +1,589 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DEMIO | Neural Interface</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<title>DEMIO AI</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #080b14;
+    color: #f4f6ff;
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+}
+
+header {
+    height: 70px;
+    padding: 15px 22px;
+    border-bottom: 1px solid #222b40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    color: #66d9ff;
+}
+
+.status {
+    font-size: 12px;
+    color: #8df5bb;
+}
+
+main {
+    max-width: 900px;
+    margin: auto;
+    padding: 20px;
+}
+
+.welcome {
+    text-align: center;
+    padding: 50px 10px 30px;
+}
+
+.core {
+    width: 95px;
+    height: 95px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #76e6ff, #1265a0, #11172d);
+    box-shadow: 0 0 35px #168dff88;
+    animation: pulse 3s infinite;
+}
+
+@keyframes pulse {
+    50% {
+        transform: scale(1.08);
+        box-shadow: 0 0 55px #168dffcc;
     }
+}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: #050812;
-      color: #e8faff;
-      font-family: Inter, sans-serif;
-      overflow: hidden;
-    }
+.welcome h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
 
-    .app {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      max-width: 1100px;
-      margin: auto;
-      padding: 18px;
-    }
+.welcome p {
+    color: #929db5;
+    font-size: 14px;
+}
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 4px 20px;
-      border-bottom: 1px solid #12334a;
-    }
+#messages {
+    min-height: 250px;
+    padding-bottom: 130px;
+}
 
-    .logo {
-      font-family: Orbitron, sans-serif;
-      font-size: 25px;
-      letter-spacing: 5px;
-      color: #48eaff;
-      text-shadow: 0 0 15px #00cfff;
-    }
+.message {
+    padding: 15px 17px;
+    margin: 14px 0;
+    border-radius: 15px;
+    max-width: 85%;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
 
-    .status {
-      color: #58f5b5;
-      font-size: 12px;
-      letter-spacing: 2px;
-    }
+.user {
+    background: #153a5d;
+    margin-left: auto;
+    border: 1px solid #28608d;
+}
 
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      padding-top: 20px;
-    }
+.bot {
+    background: #151c2d;
+    border: 1px solid #27364e;
+    margin-right: auto;
+}
 
-    .core {
-      text-align: center;
-      padding: 12px;
-    }
+.bot strong {
+    color: #67d9ff;
+}
 
-    .orb {
-      width: 125px;
-      height: 125px;
-      margin: auto;
-      border-radius: 50%;
-      border: 2px solid #28dfff;
-      box-shadow: 0 0 25px #008cff, inset 0 0 25px #007ca8;
-      background: radial-gradient(circle, #164b70, #071629 65%, #020711);
-      animation: pulse 3s infinite ease-in-out;
-    }
+.message img {
+    display: block;
+    max-width: 100%;
+    max-height: 250px;
+    margin-top: 10px;
+    border-radius: 10px;
+}
 
-    @keyframes pulse {
-      0%, 100% {
-        transform: scale(1);
-        box-shadow: 0 0 20px #008cff, inset 0 0 20px #007ca8;
-      }
-      50% {
-        transform: scale(1.06);
-        box-shadow: 0 0 40px #00d9ff, inset 0 0 35px #007ca8;
-      }
-    }
+.message a {
+    color: #7adfff;
+}
 
-    .core h2 {
-      font-family: Orbitron, sans-serif;
-      font-size: 15px;
-      letter-spacing: 4px;
-      color: #54dfff;
-      margin: 15px 0 5px;
-    }
+.typing {
+    color: #75dfff;
+    font-size: 13px;
+    margin: 10px;
+}
 
-    .core p {
-      font-size: 12px;
-      color: #7d9bad;
-    }
+.composer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    background: #080b14;
+    border-top: 1px solid #253047;
+}
 
-    .chat {
-      flex: 1;
-      min-height: 120px;
-      overflow-y: auto;
-      padding: 12px 4px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
+.input-area {
+    max-width: 850px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    background: #141b2b;
+    border: 1px solid #33425d;
+    padding: 10px;
+    border-radius: 17px;
+}
+
+textarea {
+    flex: 1;
+    resize: none;
+    background: transparent;
+    color: white;
+    border: none;
+    outline: none;
+    font-size: 15px;
+    min-height: 35px;
+    max-height: 120px;
+    padding: 8px;
+}
+
+button {
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    padding: 12px;
+    color: white;
+    background: #176fa8;
+    font-size: 14px;
+}
+
+button:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+    background: #238ccf;
+}
+
+.send {
+    background: #087fc5;
+    font-weight: bold;
+}
+
+#preview {
+    max-width: 850px;
+    margin: 0 auto 8px;
+    color: #9bdfff;
+    font-size: 12px;
+}
+
+.tools {
+    max-width: 850px;
+    margin: 10px auto 0;
+    display: flex;
+    gap: 10px;
+}
+
+.tools button {
+    background: transparent;
+    border: 1px solid #33425d;
+    color: #a9c9df;
+}
+
+.error {
+    color: #ff8585;
+}
+
+@media(max-width: 600px) {
+    main {
+        padding: 12px;
     }
 
     .message {
-      max-width: 85%;
-      padding: 13px 16px;
-      border-radius: 12px;
-      line-height: 1.5;
-      font-size: 14px;
-      overflow-wrap: anywhere;
+        max-width: 95%;
     }
 
-    .user {
-      align-self: flex-end;
-      background: #103c59;
-      border: 1px solid #167aa3;
+    .welcome {
+        padding-top: 35px;
     }
 
-    .assistant {
-      align-self: flex-start;
-      background: #101d2d;
-      border: 1px solid #1b536d;
+    .input-area {
+        gap: 5px;
+        padding: 7px;
     }
 
-    .label {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: #55dfff;
-      margin-bottom: 5px;
+    button {
+        padding: 10px;
     }
-
-    .composer {
-      border-top: 1px solid #12334a;
-      padding-top: 15px;
-    }
-
-    .input-row {
-      display: flex;
-      gap: 9px;
-    }
-
-    input[type="text"] {
-      flex: 1;
-      min-width: 0;
-      padding: 15px;
-      color: white;
-      background: #0b1726;
-      border: 1px solid #1c5872;
-      border-radius: 9px;
-      outline: none;
-      font-size: 14px;
-    }
-
-    input:focus {
-      border-color: #38dfff;
-      box-shadow: 0 0 10px #007ca8;
-    }
-
-    button, .upload-label {
-      cursor: pointer;
-      border: 1px solid #27cfff;
-      color: #62eaff;
-      background: #092338;
-      border-radius: 9px;
-      padding: 12px 15px;
-      font-weight: 600;
-    }
-
-    button:hover, .upload-label:hover {
-      background: #10405b;
-    }
-
-    .send {
-      background: #087ca2;
-      color: white;
-    }
-
-    .tools {
-      display: flex;
-      gap: 9px;
-      margin-top: 10px;
-      flex-wrap: wrap;
-    }
-
-    .tools button, .upload-label {
-      font-size: 12px;
-    }
-
-    #fileInput {
-      display: none;
-    }
-
-    #fileName {
-      color: #82b8c9;
-      font-size: 12px;
-      margin-top: 8px;
-    }
-
-    footer {
-      text-align: center;
-      padding: 12px 0 2px;
-      color: #496b7e;
-      font-size: 10px;
-      letter-spacing: 2px;
-    }
-
-    @media (max-width: 600px) {
-      .app {
-        padding: 12px;
-      }
-
-      .logo {
-        font-size: 20px;
-      }
-
-      .orb {
-        width: 95px;
-        height: 95px;
-      }
-
-      .message {
-        max-width: 94%;
-      }
-
-      button, .upload-label {
-        padding: 12px;
-      }
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
-  <div class="app">
 
-    <header>
-      <div class="logo">DEMIO</div>
-      <div class="status" id="status">● SYSTEM ONLINE</div>
-    </header>
+<header>
+    <div class="logo">DEMIO</div>
+    <div class="status" id="status">● CONNECTING</div>
+</header>
 
-    <main class="main">
+<main>
 
-      <section class="core">
-        <div class="orb"></div>
-        <h2>NEURAL CORE</h2>
-        <p id="coreStatus">Your assistant is ready.</p>
-      </section>
+    <section class="welcome" id="welcome">
+        <div class="core"></div>
+        <h1>Welcome to DEMIO</h1>
+        <p>Your personal AI intelligence system.</p>
+    </section>
 
-      <section class="chat" id="chat">
-        <div class="message assistant">
-          <span class="label">DEMIO</span>
-          Hello! I am DEMIO. Your neural core is online. How can I help you?
-        </div>
-      </section>
+    <section id="messages"></section>
 
-      <section class="composer">
-        <div class="input-row">
-          <input
+</main>
+
+<div class="composer">
+
+    <div id="preview"></div>
+
+    <div class="input-area">
+
+        <button onclick="document.getElementById('file').click()"
+                title="Attach image or video">＋</button>
+
+        <input type="file"
+               id="file"
+               accept="image/*,video/*"
+               hidden>
+
+        <textarea
             id="txt"
-            type="text"
-            placeholder="Ask DEMIO anything..."
-            autocomplete="off"
-          >
-          <button class="send" id="send">SEND</button>
-        </div>
+            placeholder="Message DEMIO..."
+            rows="1"></textarea>
 
-        <div class="tools">
-          <label class="upload-label" for="fileInput">UPLOAD FILE</label>
-          <input type="file" id="fileInput" accept="image/*,video/*,.pdf,.txt">
+        <button onclick="listen()" title="Voice input">🎤</button>
 
-          <button id="voiceBtn">VOICE: OFF</button>
-          <button id="clearBtn">CLEAR CHAT</button>
-        </div>
+        <button class="send" id="sendBtn" onclick="sendMessage()">➤</button>
 
-        <div id="fileName"></div>
-      </section>
+    </div>
 
-    </main>
+    <div class="tools">
+        <button onclick="clearChat()">New Chat</button>
+        <button onclick="checkServer()">Check Connection</button>
+    </div>
 
-    <footer>DEMIO NEURAL INTERFACE · VERSION 1.0</footer>
-  </div>
+</div>
 
-  <script>
-    // BACKEND SETTINGS
-    const DEMO = false;
-    const API_URL = "/chat";
+<script>
 
-    const $ = id => document.getElementById(id);
+const API_URL = "/api/chat";
 
-    let voiceEnabled = false;
-    let selectedFile = null;
+let history = [];
+let selectedImages = [];
+let selectedVideo = null;
+let busy = false;
 
-    function addMessage(text, sender) {
-      const message = document.createElement("div");
-      message.className = "message " + sender;
+const $ = id => document.getElementById(id);
 
-      const label = document.createElement("span");
-      label.className = "label";
-      label.textContent = sender === "user" ? "YOU" : "DEMIO";
+function setStatus(text, good = true) {
+    $("status").textContent = (good ? "● " : "● ") + text;
+    $("status").style.color = good ? "#8df5bb" : "#ff8585";
+}
 
-      const content = document.createElement("div");
-      content.textContent = text;
+function addMessage(role, text, images = []) {
 
-      message.appendChild(label);
-      message.appendChild(content);
+    $("welcome").style.display = "none";
 
-      $("chat").appendChild(message);
-      $("chat").scrollTop = $("chat").scrollHeight;
-    }
+    const div = document.createElement("div");
 
-    function speak(text) {
-      if (!voiceEnabled || !("speechSynthesis" in window)) return;
+    div.className = "message " + (role === "user" ? "user" : "bot");
 
-      window.speechSynthesis.cancel();
+    const label = document.createElement("strong");
 
-      const speech = new SpeechSynthesisUtterance(text);
-      speech.rate = 1;
-      speech.pitch = 1;
+    label.textContent = role === "user" ? "YOU\n" : "DEMIO\n";
 
-      window.speechSynthesis.speak(speech);
-    }
+    div.appendChild(label);
 
-    async function send(text) {
-      text = text.trim();
+    const content = document.createElement("div");
+    content.textContent = text;
 
-      if (!text && !selectedFile) return;
+    div.appendChild(content);
 
-      if (selectedFile && !text) {
-        addMessage("Selected file: " + selectedFile.name, "user");
-        $("coreStatus").textContent =
-          "File selected. File analysis is not connected yet.";
-        selectedFile = null;
-        $("fileInput").value = "";
-        $("fileName").textContent = "";
-        return;
-      }
+    images.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "Uploaded image";
+        div.appendChild(img);
+    });
 
-      addMessage(text, "user");
+    $("messages").appendChild(div);
 
-      $("txt").value = "";
-      $("coreStatus").textContent = "DEMIO is processing...";
-      $("status").textContent = "● PROCESSING";
+    window.scrollTo({
+        top: document.body.scrollHeight,
+        behavior: "smooth"
+    });
 
-      try {
-        let reply = "";
+    return div;
+}
 
-        if (DEMO) {
-          await new Promise(resolve => setTimeout(resolve, 1000));
+function showError(message) {
+    const div = addMessage("assistant", "Error: " + message);
+    div.classList.add("error");
+}
 
-          reply = "Hello! I am DEMIO. Your neural core is online.";
-        } else {
-          const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              message: text
-            })
-          });
+async function checkServer() {
+    try {
+        const response = await fetch("/health");
+        const data = await response.json();
 
-          const data = await response.json();
+        if (!response.ok) throw new Error("Server unavailable");
 
-          if (!response.ok) {
-            throw new Error(data.error || "Server request failed");
-          }
-
-          reply = data.reply || "I received your message.";
+        if (!data.ai_configured) {
+            setStatus("API KEY MISSING", false);
+            return;
         }
 
-        addMessage(reply, "assistant");
-        speak(reply);
+        setStatus("AI SYSTEM ONLINE");
 
-        $("coreStatus").textContent = "Ready for your next command.";
-        $("status").textContent = "● SYSTEM ONLINE";
+    } catch (error) {
+        setStatus("SERVER OFFLINE", false);
+    }
+}
 
-      } catch (error) {
-        addMessage("Connection failed: " + error.message, "assistant");
+$("file").addEventListener("change", async function(event) {
 
-        $("coreStatus").textContent = "Connection error.";
-        $("status").textContent = "● CONNECTION ERROR";
+    const file = event.target.files[0];
 
-        console.error(error);
-      }
+    if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+        alert("Please select a file smaller than 20 MB.");
+        event.target.value = "";
+        return;
     }
 
-    $("send").onclick = () => send($("txt").value);
+    if (file.type.startsWith("image/")) {
 
-    $("txt").onkeydown = event => {
-      if (event.key === "Enter") {
-        send($("txt").value);
-      }
+        if (selectedImages.length >= 4) {
+            alert("Maximum four images per message.");
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = () => {
+            selectedImages.push(reader.result);
+            $("preview").textContent =
+                selectedImages.length + " image(s) attached.";
+        };
+
+        reader.readAsDataURL(file);
+
+    } else if (file.type.startsWith("video/")) {
+
+        selectedVideo = file;
+
+        $("preview").textContent =
+            "Video selected: " + file.name +
+            " (upload storage only; video analysis is not enabled).";
+
+    } else {
+        alert("Unsupported file.");
+    }
+
+    event.target.value = "";
+
+});
+
+async function sendMessage() {
+
+    if (busy) return;
+
+    const message = $("txt").value.trim();
+
+    if (!message && selectedImages.length === 0 && !selectedVideo) {
+        return;
+    }
+
+    const images = [...selectedImages];
+    const video = selectedVideo;
+
+    const displayText = message ||
+        (images.length ? "Please look at these images." : "Video attachment");
+
+    addMessage("user", displayText, images);
+
+    $("txt").value = "";
+    selectedImages = [];
+    selectedVideo = null;
+    $("preview").textContent = "";
+
+    busy = true;
+    $("sendBtn").disabled = true;
+    setStatus("PROCESSING");
+
+    const typing = addMessage("assistant", "DEMIO is thinking...");
+
+    try {
+
+        let finalMessage = message;
+
+        // Store uploaded video
+        if (video) {
+
+            const formData = new FormData();
+            formData.append("file", video);
+
+            const uploadResponse = await fetch("/upload", {
+                method: "POST",
+                body: formData
+            });
+
+            const uploadData = await uploadResponse.json();
+
+            if (!uploadResponse.ok) {
+                throw new Error(uploadData.error || "Video upload failed.");
+            }
+
+            finalMessage +=
+                "\nVideo uploaded successfully: " +
+                uploadData.url +
+                "\nNote: The video is stored but its contents are not analyzed.";
+        }
+
+        const response = await fetch(API_URL, {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                message: finalMessage,
+                history: history,
+                images: images
+            })
+
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "AI request failed.");
+        }
+
+        if (!data.reply) {
+            throw new Error("DEMIO returned an empty response.");
+        }
+
+        typing.remove();
+
+        addMessage("assistant", data.reply);
+
+        history.push({
+            role: "user",
+            content: finalMessage
+        });
+
+        history.push({
+            role: "assistant",
+            content: data.reply
+        });
+
+        if ("speechSynthesis" in window) {
+            // Voice output is optional.
+        }
+
+        setStatus("AI SYSTEM ONLINE");
+
+    } catch (error) {
+
+        typing.remove();
+
+        showError(error.message);
+
+        setStatus("RESPONSE FAILED", false);
+
+    } finally {
+
+        busy = false;
+        $("sendBtn").disabled = false;
+
+    }
+
+}
+
+function clearChat() {
+
+    history = [];
+    selectedImages = [];
+    selectedVideo = null;
+
+    $("messages").innerHTML = "";
+    $("txt").value = "";
+    $("preview").textContent = "";
+
+    $("welcome").style.display = "block";
+
+    setStatus("AI SYSTEM ONLINE");
+
+}
+
+function listen() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Voice recognition is not supported in this browser.");
+        return;
+    }
+
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-IN";
+    recognition.interimResults = false;
+
+    recognition.onresult = event => {
+        $("txt").value =
+            event.results[0][0].transcript;
     };
 
-    $("voiceBtn").onclick = () => {
-      voiceEnabled = !voiceEnabled;
-
-      $("voiceBtn").textContent =
-        voiceEnabled ? "VOICE: ON" : "VOICE: OFF";
-
-      if (!voiceEnabled && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+    recognition.onerror = () => {
+        alert("Voice recognition failed.");
     };
 
-    $("clearBtn").onclick = () => {
-      $("chat").innerHTML = "";
+    recognition.start();
 
-      addMessage(
-        "Chat cleared. I am ready for your next command.",
-        "assistant"
-      );
-    };
+}
 
-    $("fileInput").onchange = event => {
-      selectedFile = event.target.files[0] || null;
+$("txt").addEventListener("keydown", function(event) {
 
-      $("fileName").textContent = selectedFile
-        ? "Selected: " + selectedFile.name
-        : "";
-    };
-  </script>
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+
+});
+
+checkServer();
+
+</script>
+
 </body>
 </html>
