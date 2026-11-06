@@ -3,78 +3,77 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#080000">
+<meta name="theme-color" content="#050003">
 <title>ULTRON 2099 | AI CORE</title>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@400;600;700&display=swap');
 
 :root {
-  --red:#ff102b;
-  --glow:#ff263f;
-  --dark:#080000;
-  --panel:rgba(35,0,7,.45);
-  --line:rgba(255,25,50,.28);
+ --red:#ff102d;
+ --dark:#050003;
+ --panel:rgba(35,0,9,.75);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 
-body {
- background:radial-gradient(ellipse at center,#240008 0%,#090003 45%,#020203 100%);
- color:#ff5264;
- font-family:'Rajdhani',sans-serif;
+body{
+ background:radial-gradient(ellipse at center,#26000b,#080003 65%,#020002);
+ color:#ff5267;
+ font-family:Rajdhani,sans-serif;
  min-height:100vh;
  overflow-x:hidden;
 }
 
-body:before {
+body:before{
  content:"";
  position:fixed;
  inset:0;
  pointer-events:none;
+ z-index:5;
  background:repeating-linear-gradient(
  transparent 0px,transparent 3px,
- rgba(255,0,25,.025) 4px);
- z-index:5;
+ rgba(255,0,35,.035) 4px);
 }
 
-.grid {
- position:fixed;inset:0;
+.grid{
+ position:fixed;
+ inset:0;
  background-image:
- linear-gradient(rgba(255,0,35,.045) 1px,transparent 1px),
- linear-gradient(90deg,rgba(255,0,35,.045) 1px,transparent 1px);
- background-size:40px 40px;
- mask-image:radial-gradient(ellipse,black,transparent 80%);
+ linear-gradient(rgba(255,0,35,.06) 1px,transparent 1px),
+ linear-gradient(90deg,rgba(255,0,35,.06) 1px,transparent 1px);
+ background-size:35px 35px;
+ mask-image:radial-gradient(ellipse,black,transparent 85%);
 }
 
-header {
+header{
  height:65px;
  display:flex;
  align-items:center;
  justify-content:space-between;
- padding:0 20px;
- border-bottom:1px solid var(--line);
+ padding:0 18px;
+ border-bottom:1px solid rgba(255,0,40,.3);
+ background:rgba(5,0,0,.8);
  position:relative;
  z-index:10;
- background:rgba(5,0,0,.8);
 }
 
-.logo {
- font-family:Orbitron;
- font-size:18px;
+.logo{
+ font-family:Orbitron,sans-serif;
+ font-size:17px;
  font-weight:900;
  letter-spacing:4px;
- color:#ff233d;
+ color:#ff263f;
  text-shadow:0 0 15px red;
 }
 
-.status {
- font-size:12px;
+.status{
+ font-family:Orbitron;
+ font-size:9px;
  letter-spacing:2px;
- color:#ff5264;
 }
 
-.dot {
+.dot{
  display:inline-block;
  width:7px;height:7px;
  background:red;
@@ -84,302 +83,279 @@ header {
  animation:blink 1s infinite;
 }
 
-main {
- max-width:1000px;
+main{
+ max-width:900px;
  margin:auto;
- padding:25px 15px 35px;
+ padding:24px 15px;
  position:relative;
  z-index:2;
 }
 
-.heading {
+.heading{
  text-align:center;
  font-family:Orbitron;
- letter-spacing:5px;
  font-size:13px;
- margin-top:8px;
+ letter-spacing:4px;
 }
 
-.sub {
+.subtitle{
  text-align:center;
- font-size:11px;
+ font-size:10px;
  letter-spacing:4px;
  margin-top:8px;
- opacity:.65;
+ opacity:.6;
 }
 
-.core-area {
- height:340px;
- display:flex;
- align-items:center;
- justify-content:center;
+#ultron-stage{
+ height:430px;
+ width:100%;
  position:relative;
+ overflow:hidden;
+ background:radial-gradient(ellipse,rgba(130,0,20,.22),transparent 70%);
 }
 
-.core {
- width:225px;
- height:225px;
- position:relative;
- display:flex;
- justify-content:center;
- align-items:center;
+#ultron-canvas{
+ width:100%;
+ height:100%;
 }
 
-.ring {
+#ultron-canvas canvas{
+ width:100%;
+ height:100%;
+ display:block;
+}
+
+.hud-label{
  position:absolute;
- border:1px solid rgba(255,20,45,.55);
- border-radius:50%;
- box-shadow:0 0 15px rgba(255,0,30,.15);
-}
-
-.r1 {width:100%;height:100%;border-style:dashed;animation:spin 15s linear infinite}
-.r2 {width:85%;height:85%;border-width:3px;border-top-color:#ff1835;border-bottom-color:transparent;animation:spin 6s linear infinite reverse}
-.r3 {width:70%;height:70%;border:2px dotted #ff3048;animation:spin 9s linear infinite}
-.r4 {width:55%;height:55%;border:1px solid #ff102b;box-shadow:0 0 30px #f00030,inset 0 0 25px #900018}
-
-.eye {
- width:90px;height:90px;
- border-radius:50%;
- background:radial-gradient(circle,#ff9a9a 0%,#ff263e 15%,#800014 45%,#140005 75%);
- box-shadow:0 0 25px red,0 0 65px #ff002b,0 0 110px rgba(255,0,40,.4);
- animation:pulse 2s infinite;
+ top:48%;
  z-index:2;
- display:flex;
- justify-content:center;
- align-items:center;
-}
-
-.eye:after {
- content:"";
- width:24px;height:24px;
- border-radius:50%;
- background:#fff;
- box-shadow:0 0 20px white,0 0 45px red;
-}
-
-.core:after {
- content:"";
- position:absolute;
- width:290px;height:290px;
- border:1px solid rgba(255,0,30,.12);
- border-radius:50%;
-}
-
-.side-label {
- position:absolute;
  font-family:Orbitron;
  font-size:9px;
  letter-spacing:2px;
- color:#ff354f;
+ line-height:2;
+ color:#ff4058;
+ text-shadow:0 0 12px red;
+ pointer-events:none;
 }
 
-.left {left:0;top:48%}
-.right {right:0;top:48%;text-align:right}
+.hud-left{left:2%}
+.hud-right{right:2%;text-align:right}
 
-.scan {
- width:100%;
- height:1px;
+.face-caption{
  position:absolute;
- top:50%;
- background:linear-gradient(90deg,transparent,red,transparent);
- box-shadow:0 0 15px red;
- animation:scan 4s linear infinite;
+ bottom:12px;
+ width:100%;
+ text-align:center;
+ font-family:Orbitron;
+ font-size:9px;
+ letter-spacing:3px;
+ color:#ff4058;
+ pointer-events:none;
 }
 
-.panels {
+.core-status{
+ text-align:center;
+ font-family:Orbitron;
+ font-size:10px;
+ letter-spacing:3px;
+ margin:8px 0 20px;
+}
+
+.panels{
  display:grid;
  grid-template-columns:repeat(3,1fr);
- gap:10px;
- margin:10px 0 20px;
+ gap:9px;
+ margin-bottom:18px;
 }
 
-.panel {
- border:1px solid var(--line);
- background:linear-gradient(145deg,rgba(70,0,12,.35),rgba(5,0,0,.7));
- padding:13px;
- min-height:83px;
- clip-path:polygon(0 0,94% 0,100% 18%,100% 100%,0 100%);
+.panel{
+ padding:13px 8px;
+ border:1px solid rgba(255,0,40,.3);
+ background:linear-gradient(140deg,rgba(70,0,15,.4),rgba(5,0,0,.8));
 }
 
-.panel small {
+.panel small{
  display:block;
  font-size:10px;
  letter-spacing:2px;
- opacity:.65;
+ opacity:.7;
 }
 
-.panel strong {
+.panel strong{
  display:block;
  font-family:Orbitron;
- font-size:16px;
- margin-top:9px;
+ font-size:14px;
  color:#ff3048;
+ margin-top:8px;
 }
 
-.console {
- border:1px solid var(--line);
- background:rgba(12,0,3,.85);
- padding:15px;
+.console{
+ border:1px solid rgba(255,0,40,.35);
+ background:rgba(10,0,4,.9);
+ padding:14px;
 }
 
-.console-head {
+.console-title{
  font-family:Orbitron;
  font-size:11px;
  letter-spacing:3px;
+ border-bottom:1px solid rgba(255,0,40,.3);
  padding-bottom:12px;
- border-bottom:1px solid var(--line);
 }
 
-#messages {
- height:115px;
+#messages{
+ height:120px;
  overflow-y:auto;
  padding:12px 0;
  font-size:15px;
 }
 
-.message {margin:5px 0}
-.ai {color:#ff4059}
-.user {color:#ffb2bb}
+.message{margin:5px 0}
+.ai{color:#ff4059}
+.user{color:#ffc0c7}
 
-.controls {
+.controls{
  display:flex;
  gap:8px;
- margin-top:8px;
 }
 
-input {
+input{
  flex:1;
  min-width:0;
- background:#100004;
- border:1px solid #791025;
- padding:13px;
+ background:#120006;
+ border:1px solid #8b1028;
+ padding:12px;
  color:white;
- outline:none;
  font-family:Rajdhani;
  font-size:16px;
+ outline:none;
 }
 
-button {
- background:linear-gradient(135deg,#a5001e,#30000b);
- border:1px solid #ff263f;
+button{
+ border:1px solid #ff2945;
  color:white;
- padding:10px 17px;
+ background:linear-gradient(135deg,#9e001e,#35000c);
+ padding:12px 16px;
  font-family:Orbitron;
  font-size:10px;
- letter-spacing:1px;
  cursor:pointer;
- box-shadow:0 0 12px rgba(255,0,40,.25);
 }
 
-button:active {background:#ff1737}
+button:active{background:#ff1536}
 
-.mic {
+.mic{
  width:100%;
- margin-top:12px;
- padding:14px;
- background:rgba(100,0,15,.2);
+ margin-top:10px;
 }
 
-footer {
+footer{
  text-align:center;
- margin-top:22px;
- font-size:10px;
+ margin:20px 0;
+ font-size:9px;
  letter-spacing:3px;
  opacity:.5;
 }
 
-@keyframes spin {to{transform:rotate(360deg)}}
-@keyframes pulse {
- 0%,100%{transform:scale(.9);filter:brightness(.8)}
- 50%{transform:scale(1.08);filter:brightness(1.4)}
-}
-@keyframes blink {50%{opacity:.2}}
-@keyframes scan {
- 0%{transform:translateY(-130px)}
- 100%{transform:translateY(130px)}
-}
+@keyframes blink{50%{opacity:.2}}
 
-@media(max-width:500px) {
- .logo{font-size:14px;letter-spacing:2px}
- .status{font-size:9px}
- .core-area{height:300px}
- .core{transform:scale(.85)}
- .side-label{font-size:7px}
- .panels{gap:6px}
- .panel{padding:9px 6px}
- .panel strong{font-size:12px}
+@media(max-width:500px){
+ #ultron-stage{height:350px}
+ .hud-label{font-size:7px}
+ .logo{font-size:14px}
+ .panel{padding:9px 5px}
+ .panel strong{font-size:11px}
  .panel small{font-size:8px}
- button{padding:10px}
 }
 </style>
 </head>
 
 <body>
+
 <div class="grid"></div>
 
 <header>
  <div class="logo">ULTRON<span style="color:white">.</span></div>
- <div class="status"><span class="dot"></span>CORE ONLINE</div>
+ <div class="status">
+  <span class="dot"></span>AI CORE ONLINE
+ </div>
 </header>
 
 <main>
- <div class="heading">ARTIFICIAL INTELLIGENCE SYSTEM</div>
- <div class="sub">AUTONOMOUS NEURAL NETWORK // 2099</div>
 
- <section class="core-area">
-  <div class="side-label left">NEURAL<br>SYNC 99%</div>
-  <div class="core">
-   <div class="ring r1"></div>
-   <div class="ring r2"></div>
-   <div class="ring r3"></div>
-   <div class="ring r4"></div>
-   <div class="eye"></div>
-   <div class="scan"></div>
+ <div class="heading">ARTIFICIAL INTELLIGENCE</div>
+ <div class="subtitle">AUTONOMOUS NEURAL SYSTEM // 2099</div>
+
+ <!-- ULTRON 3D FACE -->
+ <section id="ultron-stage">
+  <div class="hud-label hud-left">
+   NEURAL LINK<br>99.9%
   </div>
-  <div class="side-label right">THREAT<br>LEVEL ZERO</div>
+
+  <div id="ultron-canvas"></div>
+
+  <div class="hud-label hud-right">
+   ENTITY<br>ULTRON 2099
+  </div>
+
+  <div class="face-caption">
+   ADVANCED ANDROID INTELLIGENCE
+  </div>
  </section>
 
- <div style="text-align:center;font-family:Orbitron;font-size:11px;letter-spacing:3px;margin-bottom:20px">
-  <span class="dot"></span><span id="state">AWAITING COMMAND</span>
+ <div class="core-status">
+  <span class="dot"></span>
+  <span id="state">AWAITING COMMAND</span>
  </div>
 
  <section class="panels">
   <div class="panel">
    <small>NEURAL CORE</small>
-   <strong>99.9%</strong>
-  </div>
-  <div class="panel">
-   <small>AI STATUS</small>
    <strong>ACTIVE</strong>
   </div>
   <div class="panel">
+   <small>AI ENGINE</small>
+   <strong>GROQ</strong>
+  </div>
+  <div class="panel">
    <small>SECURITY</small>
-   <strong>MAXIMUM</strong>
+   <strong>ONLINE</strong>
   </div>
  </section>
 
  <section class="console">
-  <div class="console-head">◈ COMMAND INTERFACE</div>
+  <div class="console-title">◈ ULTRON COMMAND TERMINAL</div>
+
   <div id="messages">
-   <div class="message ai">ULTRON: Systems initialized.</div>
-   <div class="message ai">ULTRON: Awaiting your instructions, creator.</div>
+   <div class="message ai">ULTRON: Neural systems initialized.</div>
+   <div class="message ai">ULTRON: Welcome, Creator.</div>
   </div>
 
   <div class="controls">
-   <input id="command" placeholder="Enter your command..." />
+   <input id="command" placeholder="Command your AI..." autocomplete="off">
    <button onclick="send()">SEND</button>
   </div>
-  <button class="mic" onclick="listen()">◉ ACTIVATE VOICE COMMAND</button>
+
+  <button class="mic" onclick="listen()">
+   ◉ ACTIVATE VOICE COMMAND
+  </button>
  </section>
 
- <footer>ULTRON AI // ADVANCED SYSTEMS DIVISION // 2099</footer>
+ <footer>
+  ULTRON 2099 // ADVANCED AI SYSTEMS
+ </footer>
+
 </main>
 
-<script>
-const messages=document.getElementById("messages");
-const state=document.getElementById("state");
+<!-- THREE.JS ENGINE -->
+<script type="module" src="/static/app.js"></script>
 
-function addMessage(text,type) {
+<script>
+let conversationHistory = [];
+
+const messages = document.getElementById("messages");
+const state = document.getElementById("state");
+
+function addMessage(text,type){
  const div=document.createElement("div");
  div.className="message "+type;
  div.textContent=text;
@@ -387,45 +363,96 @@ function addMessage(text,type) {
  messages.scrollTop=messages.scrollHeight;
 }
 
-async function send() {
+async function send(){
  const input=document.getElementById("command");
  const text=input.value.trim();
+
  if(!text)return;
 
  addMessage("YOU: "+text,"user");
  input.value="";
- state.textContent="PROCESSING COMMAND";
+ state.textContent="PROCESSING";
 
- // Connect your AI API here.
- addMessage("ULTRON: Interface received your command. Connect an AI backend to enable intelligent responses.","ai");
+ try{
+  const response=await fetch("/chat",{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify({
+    message:text,
+    history:conversationHistory
+   })
+  });
 
- state.textContent="AWAITING COMMAND";
+  const data=await response.json();
+
+  if(!response.ok){
+   throw new Error(data.error||"AI connection failed");
+  }
+
+  addMessage("ULTRON: "+data.reply,"ai");
+
+  conversationHistory.push(
+   {role:"user",content:text},
+   {role:"assistant",content:data.reply}
+  );
+
+  conversationHistory=conversationHistory.slice(-12);
+
+  if(window.setUltronSpeaking){
+   window.setUltronSpeaking(true);
+   setTimeout(()=>window.setUltronSpeaking(false),
+    Math.min(1500+data.reply.length*35,12000));
+  }
+
+  state.textContent="CORE ONLINE";
+
+ }catch(error){
+  addMessage("ULTRON ERROR: "+error.message,"ai");
+  state.textContent="CONNECTION ERROR";
+ }
 }
 
-function listen() {
- const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
- if(!SpeechRecognition) {
-  addMessage("ULTRON: Voice recognition is not supported in this browser.","ai");
+function listen(){
+ const SpeechRecognition=
+  window.SpeechRecognition||
+  window.webkitSpeechRecognition;
+
+ if(!SpeechRecognition){
+  addMessage("ULTRON: Voice recognition unavailable.","ai");
   return;
  }
 
  const recognition=new SpeechRecognition();
  recognition.lang="en-IN";
- recognition.onstart=()=>state.textContent="LISTENING";
+
+ recognition.onstart=()=>{
+  state.textContent="LISTENING";
+ };
+
  recognition.onresult=e=>{
-  document.getElementById("command").value=e.results[0][0].transcript;
+  document.getElementById("command").value=
+   e.results[0][0].transcript;
   send();
  };
- recognition.onerror=()=>state.textContent="VOICE ERROR";
- recognition.onend=()=> {
-  if(state.textContent==="LISTENING")state.textContent="AWAITING COMMAND";
+
+ recognition.onerror=()=>{
+  state.textContent="VOICE ERROR";
  };
+
+ recognition.onend=()=>{
+  if(state.textContent==="LISTENING"){
+   state.textContent="CORE ONLINE";
+  }
+ };
+
  recognition.start();
 }
 
-document.getElementById("command").addEventListener("keydown",e=>{
+document.getElementById("command")
+.addEventListener("keydown",e=>{
  if(e.key==="Enter")send();
 });
 </script>
+
 </body>
 </html>
